@@ -1,10 +1,26 @@
 {% extends 'base.html' %}
 
+
+
 {% block content %}
     <h1>{{ course.title }}</h1>
     <p>{{ course.description }}</p>
     <p><strong>Level:</strong> {{ course.get_level_display }}</p>
     <p><strong>Date Created:</strong> {{ course.created_at|date:"F j, Y" }}</p>
+
+    <h2>Course Content</h2>
+    <div>
+        {{ course.content|linebreaks }}
+    </div>
+
+    <h2>Lessons</h2>
+    <ul>
+    {% for lesson in course.lessons.all %}
+        <li><a href="{% url 'lesson_detail' course.id lesson.id %}">{{ lesson.title }}</a></li>
+    {% empty %}
+        <p>No lessons available for this course.</p>
+    {% endfor %}
+    </ul>
 
     <a href="{% url 'course_list' %}">Back to Courses</a>
 {% endblock %}
