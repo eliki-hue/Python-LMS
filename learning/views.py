@@ -75,3 +75,21 @@ def user_logout(request):
     return redirect('login')
 
 
+@login_required
+def course_list(request):
+    """
+    Display the list of courses, grouped by levels.
+    """
+    courses_by_level = {
+        'Beginner': Course.objects.filter(level='beginner'),
+        'Intermediate': Course.objects.filter(level='intermediate'),
+        'Advanced': Course.objects.filter(level='advanced'),
+    }
+    
+    context = {
+        'courses_by_level': courses_by_level,
+    }
+    
+    return render(request, 'course_list.html', context)
+
+
