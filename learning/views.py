@@ -85,13 +85,12 @@ def course_list(request):
         'Intermediate': Course.objects.filter(level='intermediate'),
         'Advanced': Course.objects.filter(level='advanced'),
     }
-    
+
     context = {
         'courses_by_level': courses_by_level,
     }
-    
-    return render(request, 'course_list.html', context)
 
+    return render(request, 'course_list.html', context)
 
 @login_required
 def course_detail(request, course_id):
@@ -100,7 +99,8 @@ def course_detail(request, course_id):
     """
     course = get_object_or_404(Course, id=course_id)
     lessons = Lesson.objects.filter(course=course).order_by('order')
-    
+    print("courses:{course} lesson:{lesson}")
+    print(".......................................")
     context = {
         'course': course,
         'lessons': lessons,
@@ -116,7 +116,8 @@ def lesson_detail(request, course_id, lesson_id):
     """
     course = get_object_or_404(Course, id=course_id)
     lesson = get_object_or_404(Lesson, id=lesson_id, course=course)
-    
+    print("courses:{course} lesson:{lesson}")
+    print(".......................................")
     context = {
         'course': course,
         'lesson': lesson,
