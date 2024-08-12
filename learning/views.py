@@ -66,3 +66,12 @@ def user_login(request):
     return render(request, 'login.html', {'form': form})
 
 
+def user_logout(request):
+    """
+    Handle user logout.
+    """
+    logout(request)
+    messages.info(request, 'You have successfully logged out.')
+    return redirect('login')
+
+
