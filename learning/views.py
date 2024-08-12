@@ -93,3 +93,19 @@ def course_list(request):
     return render(request, 'course_list.html', context)
 
 
+@login_required
+def course_detail(request, course_id):
+    """
+    Display details of a specific course along with its lessons.
+    """
+    course = get_object_or_404(Course, id=course_id)
+    lessons = Lesson.objects.filter(course=course).order_by('order')
+    
+    context = {
+        'course': course,
+        'lessons': lessons,
+    }
+    
+    return render(request, 'course_detail.html', context)
+
+
