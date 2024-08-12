@@ -109,3 +109,17 @@ def course_detail(request, course_id):
     return render(request, 'course_detail.html', context)
 
 
+@login_required
+def lesson_detail(request, course_id, lesson_id):
+    """
+    Display details of a specific lesson within a course.
+    """
+    course = get_object_or_404(Course, id=course_id)
+    lesson = get_object_or_404(Lesson, id=lesson_id, course=course)
+    
+    context = {
+        'course': course,
+        'lesson': lesson,
+    }
+    
+    return render(request, 'lesson_detail.html', context)
