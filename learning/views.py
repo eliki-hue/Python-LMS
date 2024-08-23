@@ -134,3 +134,25 @@ def lesson_detail(request, course_id, lesson_id):
     }
     
     return render(request, 'lesson_detail.html', context)
+
+
+@login_required
+def dashboard(request):
+    courses = Course.objects.all()
+    progress_data = {}
+
+    for course in courses:
+        lessons = course.lessons.all()
+        completed_lessons = Progress.objects.filter(user=request.user, lesson__in=lessons, completed=True).count()
+        total_lessons = lessons.count()
+        progress_data[course] = {
+            'completed_lessons': completed_lessons,
+            'total_lessons': total_lessons,
+            'percentage': (completed_lessons / total_lessons) * 100 if total_lessons > 0 else 0,
+        }
+
+    context = {
+        'progress_data': progress_data,
+    }
+
+    return render(request, 'dashboard.html', context)
