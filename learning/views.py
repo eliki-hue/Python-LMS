@@ -5,9 +5,10 @@ from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from django.utils import timezone
 
 from .forms import SignUpForm
-from .models import Course, Lesson
+from .models import Course, Lesson, Progress
 
 
 def signup(request):
@@ -118,6 +119,15 @@ def lesson_detail(request, course_id, lesson_id):
     lesson = get_object_or_404(Lesson, id=lesson_id, course=course)
     print("courses:{course} lesson:{lesson}")
     print(".......................................")
+
+    # Track progress
+    progress, created = Progress.objects.get_or_create(user=request.user, lesson=lesson)
+    if not progress.completed:
+        progress.completed = True
+        progress.completed_at = timezone.now()
+        progress.save()
+
+
     context = {
         'course': course,
         'lesson': lesson,
