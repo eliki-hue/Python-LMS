@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>Your Progress Dashboard</h1>
+    
+    <table>
+        <thead>
+            <tr>
+                <th>Course</th>
+                <th>Completed Lessons</th>
+                <th>Total Lessons</th>
+                <th>Progress</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for course, data in progress_data.items %}
+            <tr>
+                <td>{{ course.title }}</td>
+                <td>{{ data.completed_lessons }}</td>
+                <td>{{ data.total_lessons }}</td>
+                <td>
+                    <div style="width: 100%; background-color: #e9ecef; border-radius: 4px;">
+                        <div style="width: {{ data.percentage }}%; background-color: #007bff; padding: 4px; border-radius: 4px; color: white;">
+                            {{ data.percentage|floatformat:2 }}%
+                        </div>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
