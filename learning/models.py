@@ -1,5 +1,6 @@
 from django.contrib.auth.models import User
 from django.db import models
+import uuid
 
 class Course(models.Model):
     LEVEL_CHOICES = [
@@ -50,3 +51,11 @@ class StudentLevelAccess(models.Model):
 
     def __str__(self):
         return f'{self.user.username} - {self.get_level_display()}'
+    
+class Profile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    verification_code = models.UUIDField(default=uuid.uuid4, editable=False)
+    is_verified = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.user.username
