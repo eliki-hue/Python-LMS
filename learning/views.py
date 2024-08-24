@@ -10,40 +10,82 @@ from django.shortcuts import render, redirect
 from .models import Course, Progress, StudentLevelAccess
 from django.contrib import messages
 from django.utils import timezone
+from django.core.mail import send_mail
+from django.conf import settings
 
 from .forms import SignUpForm
-from .models import Course, Lesson, Progress
+from .models import Course, Lesson, Progress, Profile
 
+
+# def signup(request):
+#     """
+#     Handle user signup.
+#     """
+#     if request.method == 'POST':
+#         form = SignUpForm(request.POST)
+#         if form.is_valid():
+#             user = form.save()  # Save the new user
+#             # Optionally, set user.is_active=False for email verification
+#             # user.is_active = False
+#             # user.save()
+            
+#             # Automatically log the user in after successful signup
+#             raw_password = form.cleaned_data.get('password1')
+#             user = authenticate(username=user.username, password=raw_password)
+#             if user is not None:
+#                 login(request, user)
+#                 messages.success(request, f'Welcome, {user.username}! Your account was created successfully.')
+#                 return redirect('course_list')
+#             else:
+#                 messages.error(request, 'Authentication failed. Please try logging in.')
+#                 return redirect('login')
+            
+
+#         else:
+#             messages.error(request, 'Please correct the errors below.')
+
+        
+#     else:
+#         form = SignUpForm()
+    
+#     return render(request, 'signup.html', {'form': form})
 
 def signup(request):
-    """
-    Handle user signup.
-    """
     if request.method == 'POST':
-        form = SignUpForm(request.POST)
-        if form.is_valid():
-            user = form.save()  # Save the new user
-            # Optionally, set user.is_active=False for email verification
-            # user.is_active = False
-            # user.save()
-            
-            # Automatically log the user in after successful signup
-            raw_password = form.cleaned_data.get('password1')
-            user = authenticate(username=user.username, password=raw_password)
-            if user is not None:
-                login(request, user)
-                messages.success(request, f'Welcome, {user.username}! Your account was created successfully.')
-                return redirect('course_list')
-            else:
-                messages.error(request, 'Authentication failed. Please try logging in.')
-                return redirect('login')
-        else:
-            messages.error(request, 'Please correct the errors below.')
+        username = request.POST['username']
+        password = request.POST['password']
+        email = request.POST['email']
+
+        user = User.objects.create_user(username=username, password=password, email=email)
+        user.save()
+
+        # Create a profile with a verification code
+        profile = Profile.objects.create(user=user)
+
+        # Send verification email
+        verification_link = request.build_absolute_uri(f'/verify-email/{profile.verification_code}/')
+        send_mail(
+            'Email Verification',
+            f'Click the link to verify your email: {verification_link}',
+            settings.DEFAULT_FROM_EMAIL,
+            [email],
+            fail_silently=False,
+        )
+
+        return redirect('verify_email_prompt')  # Redirect to a page asking the user to check their email
     else:
         form = SignUpForm()
-    
-    return render(request, 'signup.html', {'form': form})
+    return render(request, 'signup.html')
 
+def verify_email(request, verification_code):
+    profile = get_object_or_404(Profile, verification_code=verification_code)
+    
+    if not profile.is_verified:
+        profile.is_verified = True
+        profile.save()
+        login(request, profile.user)  # Log the user in after verification
+    
+    return redirect('email_verified')  # Redirect to a page confirming verification
 
 def user_login(request):
     """
