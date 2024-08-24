@@ -14,13 +14,17 @@
     </div>
 
     <h2>Lessons</h2>
-    <ul>
+    <ol>
     {% for lesson in course.lessons.all %}
         <li><a href="{% url 'lesson_detail' course.id lesson.id %}">{{ lesson.title }}</a></li>
     {% empty %}
         <p>No lessons available for this course.</p>
     {% endfor %}
-    </ul>
+    </ol>
 
-    <a href="{% url 'course_list' %}">Back to Courses</a>
+    <a href="{% url 'course_list' %}">
+        <button type="button" style="padding: 10px 20px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">
+            Back to Courses
+        </button>
+    </a>
 {% endblock %}

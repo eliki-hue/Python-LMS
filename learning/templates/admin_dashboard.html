@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>Admin Dashboard</h1>
+    
+    <h2>Assign Access Levels</h2>
+    <form method="post">
+        {% csrf_token %}
+        <label for="user_id">Select Student:</label>
+        <select name="user_id" id="user_id">
+            {% for student in students %}
+                <option value="{{ student.id }}">{{ student.username }}</option>
+            {% endfor %}
+        </select>
+
+        <label for="level">Select Level:</label>
+        <select name="level" id="level">
+            {% for value, display in level_choices %}
+                <option value="{{ value }}">{{ display }}</option>
+            {% endfor %}
+        </select>
+
+        <button type="submit">Assign Level</button>
+    </form>
+
+    <h2>Student Progress</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Student</th>
+                <th>Course</th>
+                <th>Completed Lessons</th>
+                <th>Total Lessons</th>
+                <th>Progress</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for student, courses in progress_data.items %}
+                {% for course, data in courses.items %}
+                <tr>
+                    <td>{{ student.username }}</td>
+                    <td>{{ course.title }}</td>
+                    <td>{{ data.completed_lessons }}</td>
+                    <td>{{ data.total_lessons }}</td>
+                    <td>
+                        <div style="width: 100%; background-color: #e9ecef; border-radius: 4px;">
+                            <div style="width: {{ data.percentage }}%; background-color: #007bff; padding: 4px; border-radius: 4px; color: white;">
+                                {{ data.percentage|floatformat:2 }}%
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

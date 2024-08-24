@@ -43,7 +43,7 @@ class Progress(models.Model):
 
 class StudentLevelAccess(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    level = models.CharField(max_length=20, choices=Course.LEVEL_CHOICES)
+    level = models.CharField(max_length=20, choices=Course.LEVEL_CHOICES, default='beginner')
 
     class Meta:
         unique_together = ('user', 'level')

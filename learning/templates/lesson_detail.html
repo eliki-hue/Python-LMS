@@ -3,5 +3,13 @@
 {% block content %}
 <h2>{{ lesson.title }}</h2>
 <p>{{ lesson.content }}</p>
-<a href="{% url 'course_list' %}" class="btn btn-secondary">Back to Courses</a>
+<nav>
+    <ul style="list-style: none;">
+        <li><a href="{% url 'course_detail' course.id %}">
+            <button type="button" style="padding: 10px 20px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                Back to Lessons
+            </button>
+        </a></li>
+    </ul>
+</nav>
 {% endblock %}

@@ -4,6 +4,10 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render, redirect
+from .models import Course, Progress, StudentLevelAccess
 from django.contrib import messages
 from django.utils import timezone
 
@@ -76,7 +80,7 @@ def user_logout(request):
     return redirect('login')
 
 
-@login_required
+# @login_required
 def course_list(request):
     """
     Display the list of courses, grouped by levels.
@@ -136,23 +140,50 @@ def lesson_detail(request, course_id, lesson_id):
     return render(request, 'lesson_detail.html', context)
 
 
+
 @login_required
-def dashboard(request):
+def admin_dashboard(request):
+    if not request.user.is_staff:  # Ensure only admin users can access this view
+        return redirect('course_list')
+    
+    if request.method == 'POST':
+        # Handle the form submission to update access levels
+        user_id = request.POST.get('user_id')
+        level = request.POST.get('level')
+
+        user = User.objects.get(id=user_id)
+        StudentLevelAccess.objects.update_or_create(user=user, level=level)
+
+        return redirect('admin_dashboard')
+
+    # Load all students and their access levels
+    students = User.objects.all()
+    access_levels = StudentLevelAccess.objects.all()
+
+    level_choices = Course.LEVEL_CHOICES
+
+    # Aggregate student progress
     courses = Course.objects.all()
     progress_data = {}
 
-    for course in courses:
-        lessons = course.lessons.all()
-        completed_lessons = Progress.objects.filter(user=request.user, lesson__in=lessons, completed=True).count()
-        total_lessons = lessons.count()
-        progress_data[course] = {
-            'completed_lessons': completed_lessons,
-            'total_lessons': total_lessons,
-            'percentage': (completed_lessons / total_lessons) * 100 if total_lessons > 0 else 0,
-        }
+    for student in students:
+        student_progress = {}
+        for course in courses:
+            lessons = course.lessons.all()
+            completed_lessons = Progress.objects.filter(user=student, lesson__in=lessons, completed=True).count()
+            total_lessons = lessons.count()
+            student_progress[course] = {
+                'completed_lessons': completed_lessons,
+                'total_lessons': total_lessons,
+                'percentage': (completed_lessons / total_lessons) * 100 if total_lessons > 0 else 0,
+            }
+        progress_data[student] = student_progress
 
     context = {
+        'students': students,
+        'level_choices': level_choices,
         'progress_data': progress_data,
+        'access_levels': access_levels,
     }
 
-    return render(request, 'dashboard.html', context)
+    return render(request, 'admin_dashboard.html', context)
