@@ -87,6 +87,10 @@ def verify_email(request, verification_code):
     
     return redirect('email_verified')  # Redirect to a page confirming verification
 
+
+def email_verified(request):
+    return render(request, 'email_verified.html')
+
 def user_login(request):
     """
     Handle user login.
