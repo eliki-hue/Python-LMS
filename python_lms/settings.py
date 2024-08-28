@@ -41,7 +41,24 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'learning',
     'verify_email.apps.VerifyEmailConfig',
+    'ckeditor',
+    'ckeditor_uploader',
 ]
+
+CKEDITOR_UPLOAD_PATH = "uploads/"
+# Configure the CKEditor
+CKEDITOR_CONFIGS = {
+    'default': {
+        'toolbar': 'full',
+        'height': 300,
+        'width': '100%',
+        'extraPlugins': 'codesnippet',
+        'codeSnippet_theme': 'monokai_sublime',
+    },
+}
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

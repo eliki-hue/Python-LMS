@@ -2,7 +2,7 @@
 
 {% block content %}
 <h2>{{ lesson.title }}</h2>
-<p>{{ lesson.content }}</p>
+<p>{{ lesson.content|safe }}</p>
 <nav>
     <ul style="list-style: none;">
         <li><a href="{% url 'course_detail' course.id %}">
