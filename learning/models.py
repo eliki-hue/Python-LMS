@@ -1,6 +1,10 @@
 from django.contrib.auth.models import User
 from django.db import models
 import uuid
+from django.contrib.auth.models import AbstractUser
+
+# class CustomUser(AbstractUser):
+#     email = models.EmailField(unique=True)
 
 class Course(models.Model):
     LEVEL_CHOICES = [

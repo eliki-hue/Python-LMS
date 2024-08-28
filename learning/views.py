@@ -12,84 +12,107 @@ from django.contrib import messages
 from django.utils import timezone
 from django.core.mail import send_mail
 from django.conf import settings
+from django.core.exceptions import ValidationError
+from verify_email.email_handler import send_verification_email
 
 from .forms import SignUpForm
 from .models import Course, Lesson, Progress, Profile
 
 
-# def signup(request):
-#     """
-#     Handle user signup.
-#     """
-#     if request.method == 'POST':
-#         form = SignUpForm(request.POST)
-#         if form.is_valid():
-#             user = form.save()  # Save the new user
-#             # Optionally, set user.is_active=False for email verification
-#             # user.is_active = False
-#             # user.save()
+def signup(request):
+    """
+    Handle user signup.
+    """
+    if request.method == 'POST':
+        form = SignUpForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            # user.is_active =False
+            # print(send_verification_email(request, form))
+            # return render(request, 'email_verification_sent.html')
+            # except ValidationError as e:
+            #     form.add_error(None, e)
+
+
+            # inactive_user = send_verification_email(request, form)
+            # user = form.save()  # Save the new user
+            # Optionally, set user.is_active=False for email verification
+            # user.is_active = False
+            # user.save()
             
-#             # Automatically log the user in after successful signup
-#             raw_password = form.cleaned_data.get('password1')
-#             user = authenticate(username=user.username, password=raw_password)
-#             if user is not None:
-#                 login(request, user)
-#                 messages.success(request, f'Welcome, {user.username}! Your account was created successfully.')
-#                 return redirect('course_list')
-#             else:
-#                 messages.error(request, 'Authentication failed. Please try logging in.')
-#                 return redirect('login')
+            # Automatically log the user in after successful signup
+            raw_password = form.cleaned_data.get('password1')
+            user = authenticate(username=user.username, password=raw_password)
+            if user is not None:
+                login(request, user)
+                messages.success(request, f'Welcome, {user.username}! Your account was created successfully.')
+                return redirect('course_list')
+            else:
+                messages.error(request, 'Authentication failed. Please try logging in.')
+                return redirect('login')
             
 
-#         else:
-#             messages.error(request, 'Please correct the errors below.')
+        else:
+            messages.error(request, 'Please correct the errors below.')
 
         
-#     else:
-#         form = SignUpForm()
-    
-#     return render(request, 'signup.html', {'form': form})
-
-def signup(request):
-    if request.method == 'POST':
-        username = request.POST['username']
-        password = request.POST['password']
-        email = request.POST['email']
-
-        user = User.objects.create_user(username=username, password=password, email=email)
-        user.save()
-
-        # Create a profile with a verification code
-        profile = Profile.objects.create(user=user)
-
-        # Send verification email
-        verification_link = request.build_absolute_uri(f'/verify-email/{profile.verification_code}/')
-        send_mail(
-            'Email Verification',
-            f'Click the link to verify your email: {verification_link}',
-            settings.DEFAULT_FROM_EMAIL,
-            [email],
-            fail_silently=False,
-        )
-
-        return redirect('verify_email_prompt')  # Redirect to a page asking the user to check their email
     else:
         form = SignUpForm()
-    return render(request, 'signup.html')
+    
+    return render(request, 'signup.html', {'form': form})
 
-def verify_email(request, verification_code):
-    profile = get_object_or_404(Profile, verification_code=verification_code)
+# def signup(request):
+#     if request.method == 'POST':
+#         username = request.POST['username']
+#         password = request.POST['password']
+#         email = request.POST['email']
+
+#         user = User.objects.create_user(username=username, password=password, email=email)
+#         user.save()
+
+#         # Create a profile with a verification code
+#         profile = Profile.objects.create(user=user)
+
+#         # Send verification email
+#         verification_link = request.build_absolute_uri(f'/verify-email/{profile.verification_code}/')
+#         send_mail(
+#             'Email Verification',
+#             f'Click the link to verify your email: {verification_link}',
+#             settings.DEFAULT_FROM_EMAIL,
+#             [email],
+#             fail_silently=False,
+#         )
+
+#         return redirect('verify_email_prompt')  # Redirect to a page asking the user to check their email
+#     else:
+#         form = SignUpForm()
+#     return render(request, 'signup.html')
+
+# def verify_email(request, verification_code):
+#     profile = get_object_or_404(Profile, verification_code=verification_code)
     
-    if not profile.is_verified:
-        profile.is_verified = True
-        profile.save()
-        login(request, profile.user)  # Log the user in after verification
+#     if not profile.is_verified:
+#         profile.is_verified = True
+#         profile.save()
+#         login(request, profile.user)  # Log the user in after verification
     
-    return redirect('email_verified')  # Redirect to a page confirming verification
+#     return redirect('email_verified')  # Redirect to a page confirming verification
 
 
 def email_verified(request):
     return render(request, 'email_verified.html')
+
+def email_verification(request, token):
+    try:
+        email_object = VerifyEmailToken.objects.get(token=token)
+        user = email_object.user
+        user.is_active = True  # Activate the user's account
+        user.save()
+        email_object.delete()  # Delete the token once used
+        login(request, user)  # Optionally log the user in
+        return redirect('email_verified')  # Redirect to a success page
+    except VerifyEmailToken.DoesNotExist:
+        return redirect('email_verification_failed')  # Redirect to a failure page
 
 def user_login(request):
     """
@@ -126,7 +149,7 @@ def user_logout(request):
     return redirect('login')
 
 
-# @login_required
+@login_required
 def course_list(request):
     """
     Display the list of courses, grouped by levels.
