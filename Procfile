@@ -1,0 +1,1 @@
+web: gunicorn python_LMS.wsgi --log-file -
