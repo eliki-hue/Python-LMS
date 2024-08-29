@@ -1,0 +1,49 @@
+.lesson-container {
+    display: flex;
+    align-items: flex-start; /* Ensures both side panel and content align at the top */
+}
+
+.side-panel {
+    width: 25%; /* Adjust the width of the side panel */
+    background-color: #f7f7f7;
+    padding: 20px;
+    border-right: 1px solid #ddd;
+    box-sizing: border-box; /* Ensure padding does not affect width */
+    height: 100vh; /* Make it full height if needed */
+    overflow-y: auto; /* Add scroll if content overflows */
+}
+
+.lesson-content {
+    width: 75%; /* Remaining width for the content */
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.lesson-list {
+    list-style-type: none;
+    padding: 0;
+}
+
+.lesson-list li {
+    margin-bottom: 10px;
+}
+
+.lesson-list li.active a {
+    font-weight: bold;
+    color: #f76b1c;
+}
+
+.lesson-list a {
+    text-decoration: none;
+    color: #333;
+}
+
+.lesson-list a:hover {
+    text-decoration: underline;
+    color: #f76b1c;
+}
+
+.content-body {
+    margin-top: 20px;
+    line-height: 1.6;
+}

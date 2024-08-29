@@ -1,9 +1,70 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h2>{{ lesson.title }}</h2>
-<p>{{ lesson.content }}</p>
-<nav>
+<head>
+    <style>
+        .lesson-container {
+    display: flex;
+    align-items: flex-start; /* Ensures both side panel and content align at the top */
+}
+
+.side-panel {
+    width: 25%; /* Adjust the width of the side panel */
+    background-color: #f7f7f7;
+    padding: 20px;
+    border-right: 1px solid #ddd;
+    box-sizing: border-box; /* Ensure padding does not affect width */
+    height: 100vh; /* Make it full height if needed */
+    overflow-y: auto; /* Add scroll if content overflows */
+}
+
+.lesson-content {
+    width: 75%; /* Remaining width for the content */
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.lesson-list {
+    list-style-type: none;
+    padding: 0;
+}
+
+.lesson-list li {
+    margin-bottom: 10px;
+}
+
+.lesson-list li.active a {
+    font-weight: bold;
+    color: #f76b1c;
+}
+
+.lesson-list a {
+    text-decoration: none;
+    color: #333;
+}
+
+.lesson-list a:hover {
+    text-decoration: underline;
+    color: #f76b1c;
+}
+
+.content-body {
+    margin-top: 20px;
+    line-height: 1.6;
+}
+    </style>
+</head>
+<div class="lesson-container">
+    <div class="side-panel">
+        <h3>Lessons in {{ course.title }}</h3>
+        <ul class="lesson-list">
+            {% for lesson in lessons %}
+                <li {% if lesson.id == lesson_id %}class="active"{% endif %}>
+                    <a href="{% url 'lesson_detail' course.id lesson.id %}">{{ lesson.title }}</a>
+                </li>
+            {% endfor %}
+        </ul>
+        <nav>
     <ul style="list-style: none;">
         <li><a href="{% url 'course_detail' course.id %}">
             <button type="button" style="padding: 10px 20px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">
@@ -12,4 +73,14 @@
         </a></li>
     </ul>
 </nav>
+    </div>
+    <div class="lesson-content">
+        <h1>{{ lesson.title }}</h1>
+        <div class="content-body">
+            {{ lesson.content|safe }}
+        </div>
+    </div>
+</div>
+<script src="../script.js"></script>
+
 {% endblock %}

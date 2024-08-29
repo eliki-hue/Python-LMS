@@ -1,5 +1,7 @@
-from django.urls import path
+from django.urls import path, include
 from . import views
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     path('signup/', views.signup, name='signup'),
@@ -12,4 +14,8 @@ urlpatterns = [
     path('dashboard/', views.admin_dashboard, name='admin_dashboard'),
     path('course/<int:course_id>/', views.course_detail, name='course_detail'),
     path('course/<int:course_id>/lesson/<int:lesson_id>/', views.lesson_detail, name='lesson_detail'),
+    path('ckeditor/', include('ckeditor_uploader.urls')),
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

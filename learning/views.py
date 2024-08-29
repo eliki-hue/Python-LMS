@@ -61,42 +61,6 @@ def signup(request):
     
     return render(request, 'signup.html', {'form': form})
 
-# def signup(request):
-#     if request.method == 'POST':
-#         username = request.POST['username']
-#         password = request.POST['password']
-#         email = request.POST['email']
-
-#         user = User.objects.create_user(username=username, password=password, email=email)
-#         user.save()
-
-#         # Create a profile with a verification code
-#         profile = Profile.objects.create(user=user)
-
-#         # Send verification email
-#         verification_link = request.build_absolute_uri(f'/verify-email/{profile.verification_code}/')
-#         send_mail(
-#             'Email Verification',
-#             f'Click the link to verify your email: {verification_link}',
-#             settings.DEFAULT_FROM_EMAIL,
-#             [email],
-#             fail_silently=False,
-#         )
-
-#         return redirect('verify_email_prompt')  # Redirect to a page asking the user to check their email
-#     else:
-#         form = SignUpForm()
-#     return render(request, 'signup.html')
-
-# def verify_email(request, verification_code):
-#     profile = get_object_or_404(Profile, verification_code=verification_code)
-    
-#     if not profile.is_verified:
-#         profile.is_verified = True
-#         profile.save()
-#         login(request, profile.user)  # Log the user in after verification
-    
-#     return redirect('email_verified')  # Redirect to a page confirming verification
 
 
 def email_verified(request):
@@ -190,6 +154,7 @@ def lesson_detail(request, course_id, lesson_id):
     """
     course = get_object_or_404(Course, id=course_id)
     lesson = get_object_or_404(Lesson, id=lesson_id, course=course)
+    lessons = Lesson.objects.filter(course=course).order_by('id')  # Get all lessons in the course
     print("courses:{course} lesson:{lesson}")
     print(".......................................")
 
@@ -204,6 +169,7 @@ def lesson_detail(request, course_id, lesson_id):
     context = {
         'course': course,
         'lesson': lesson,
+        'lessons': lessons,
     }
     
     return render(request, 'lesson_detail.html', context)
