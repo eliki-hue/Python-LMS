@@ -29,7 +29,7 @@ SECRET_KEY = 'django-insecure-9od=10bdau&+gx5n4khdggg310w_5k^^=1v*2je0pytyd0v2+j
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['.127.0.0.1','.localhost', '127.0.0.1']
 
 
 # Application definition
@@ -98,6 +98,10 @@ WSGI_APPLICATION = 'python_lms.wsgi.application'
 
 if config('MODE')=='dev':
      DATABASES = {
+    #        'default': {
+    #         'ENGINE': 'django.db.backends.sqlite3',
+    #         'NAME': BASE_DIR / 'db.sqlite3',  # This stores the SQLite3 database in the project root
+    # }
         'default': {
             'ENGINE': 'django.db.backends.postgresql_psycopg2',
             'NAME': config('NAME'),
@@ -127,7 +131,7 @@ else:
 db_from_env = dj_database_url.config(conn_max_age=500)
 DATABASES['default'].update(db_from_env)
 
-ALLOWED_HOSTS = config('ALLOWED_HOSTS', cast= Csv())
+# ALLOWED_HOSTS = config('ALLOWED_HOSTS', cast= Csv())
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
 
