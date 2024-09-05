@@ -100,11 +100,11 @@ if config('MODE')=='dev':
      DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql_psycopg2',
-            'NAME': 'railway',
-            'USER':'postgres',
-            'PASSWORD':'pfsQXtqieORdouRwUdMQBomszjJvsoHI',
-            'HOST':"meticulous-empathy.railway.internal",
-            'PORT':'5432'
+            'NAME': config('NAME'),
+            'USER':config('USER'),
+            'PASSWORD':config("PASSWORD"),
+            'HOST':config('HOST'),
+            'PORT':config('PORT')
             
         }
     # DATABASES = {
