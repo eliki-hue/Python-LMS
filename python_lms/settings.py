@@ -97,16 +97,26 @@ WSGI_APPLICATION = 'python_lms.wsgi.application'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 if config('MODE')=='dev':
-    DATABASES = {
+     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql_psycopg2',
-            'NAME': config('DB_NAME'),
-            'USER':config('DB_USER'),
-            'PASSWORD': config('DB_PASSWORD'),
-            'HOST':config('DB_HOST'),
-            'PORT':''
+            'NAME': 'railway',
+            'USER':'postgres',
+            'PASSWORD':'pfsQXtqieORdouRwUdMQBomszjJvsoHI',
+            'HOST':"meticulous-empathy.railway.internal",
+            'PORT':'5432'
             
         }
+    # DATABASES = {
+    #     'default': {
+    #         'ENGINE': 'django.db.backends.postgresql_psycopg2',
+    #         'NAME': config('DB_NAME'),
+    #         'USER':config('DB_USER'),
+    #         'PASSWORD': config('DB_PASSWORD'),
+    #         'HOST':config('DB_HOST'),
+    #         'PORT':''
+            
+    #     }
     }
 else:
     DATABASES = {
