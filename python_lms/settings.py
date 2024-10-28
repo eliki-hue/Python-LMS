@@ -18,7 +18,7 @@ import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
@@ -43,20 +43,30 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'learning',
     'verify_email.apps.VerifyEmailConfig',
-    'ckeditor',
-    'ckeditor_uploader',
+    'django_ckeditor_5',
+   
 ]
 
 CKEDITOR_UPLOAD_PATH = "uploads/"
 # Configure the CKEditor
-CKEDITOR_CONFIGS = {
+# CKEDITOR_CONFIGS = {
+#     'default': {
+#         'toolbar': 'full',
+#         'height': 300,
+#         'width': '100%',
+#         'extraPlugins': 'codesnippet',
+#         'codeSnippet_theme': 'monokai_sublime',
+#     },
+# }
+CKEDITOR_5_CONFIGS = {
     'default': {
-        'toolbar': 'full',
+        'toolbar': 'full',  # Options: 'basic', 'default', or 'full'
         'height': 300,
         'width': '100%',
-        'extraPlugins': 'codesnippet',
-        'codeSnippet_theme': 'monokai_sublime',
-    },
+        'image': {
+            'upload': {'url': '/upload_image/'},  # URL for handling uploads
+        },
+    }
 }
 
 MEDIA_URL = '/media/'
@@ -104,11 +114,11 @@ if config('MODE')=='dev':
     # }
         'default': {
             'ENGINE': 'django.db.backends.postgresql_psycopg2',
-            'NAME': config('NAME'),
-            'USER':config('USER'),
-            'PASSWORD':config("PASSWORD"),
-            'HOST':config('HOST'),
-            'PORT':config('PORT')
+            # 'NAME': config('NAME'),
+            # 'USER':config('USER'),
+            # 'PASSWORD':config("PASSWORD"),
+            # 'HOST':config('HOST'),
+            # 'PORT':config('PORT')
             
         }
     # DATABASES = {

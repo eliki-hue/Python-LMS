@@ -2,7 +2,8 @@ from django.contrib.auth.models import User
 from django.db import models
 import uuid
 from django.contrib.auth.models import AbstractUser
-from ckeditor_uploader.fields import RichTextUploadingField
+
+from django_ckeditor_5.fields import CKEditor5Field
 # class CustomUser(AbstractUser):
 #     email = models.EmailField(unique=True)
 
@@ -25,7 +26,7 @@ class Course(models.Model):
 class Lesson(models.Model):
     course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='lessons')
     title = models.CharField(max_length=200)
-    content = RichTextUploadingField()
+    content = CKEditor5Field(config_name='default')
     order = models.PositiveIntegerField()  # To order lessons in a course
 
     class Meta:

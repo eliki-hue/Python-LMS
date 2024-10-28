@@ -14,10 +14,29 @@ from django.core.mail import send_mail
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from verify_email.email_handler import send_verification_email
+# ckeditor imports
+from django.views.decorators.csrf import csrf_exempt
+from django.http import JsonResponse
+from django.core.files.storage import default_storage
+from django.core.files.base import ContentFile
+
 
 from .forms import SignUpForm
 from .models import Course, Lesson, Progress, Profile
 
+# ckeditor view to handle file import
+@csrf_exempt
+def upload_image(request):
+    if request.method == 'POST' and request.FILES.get('upload'):
+        image = request.FILES['upload']
+        image_path = default_storage.save(f'uploads/{image.name}', ContentFile(image.read()))
+        image_url = f"{request.scheme}://{request.get_host()}{settings.MEDIA_URL}{image_path}"
+        
+        return JsonResponse({
+            'url': image_url,  # CKEditor expects 'url' as the response key
+            'uploaded': True
+        })
+    return JsonResponse({'uploaded': False}, status=400)
 
 def signup(request):
     """

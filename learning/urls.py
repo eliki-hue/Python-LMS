@@ -2,6 +2,7 @@ from django.urls import path, include
 from . import views
 from django.conf import settings
 from django.conf.urls.static import static
+from .views import upload_image
 
 urlpatterns = [
     path('signup/', views.signup, name='signup'),
@@ -14,7 +15,9 @@ urlpatterns = [
     path('dashboard/', views.admin_dashboard, name='admin_dashboard'),
     path('course/<int:course_id>/', views.course_detail, name='course_detail'),
     path('course/<int:course_id>/lesson/<int:lesson_id>/', views.lesson_detail, name='lesson_detail'),
-    path('ckeditor/', include('ckeditor_uploader.urls')),
+    # path('ckeditor/', include('ckeditor_uploader.urls')),
+    path('upload_image/', upload_image, name='upload_image'),
+
 ]
 
 if settings.DEBUG:
