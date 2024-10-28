@@ -38,49 +38,24 @@ def upload_image(request):
         })
     return JsonResponse({'uploaded': False}, status=400)
 
+
 def signup(request):
-    """
-    Handle user signup.
-    """
     if request.method == 'POST':
+        print('ggfhhhkhfjhfjhhhfhfdjhhfgghh')
         form = SignUpForm(request.POST)
         if form.is_valid():
-            user = form.save()
-            # user.is_active =False
-            # print(send_verification_email(request, form))
-            # return render(request, 'email_verification_sent.html')
-            # except ValidationError as e:
-            #     form.add_error(None, e)
-
-
-            # inactive_user = send_verification_email(request, form)
-            # user = form.save()  # Save the new user
-            # Optionally, set user.is_active=False for email verification
-            # user.is_active = False
-            # user.save()
-            
-            # Automatically log the user in after successful signup
-            raw_password = form.cleaned_data.get('password1')
-            user = authenticate(username=user.username, password=raw_password)
-            if user is not None:
-                login(request, user)
-                messages.success(request, f'Welcome, {user.username}! Your account was created successfully.')
-                return redirect('course_list')
-            else:
-                messages.error(request, 'Authentication failed. Please try logging in.')
-                return redirect('login')
-            
-
+            print('saving the data')
+            form.save()  # Save user to the database
+            messages.success(request, 'Account created successfully!')
+            print('saving the data')
+            return redirect('login')  # Redirect to the login page
         else:
+            print('not valid')
             messages.error(request, 'Please correct the errors below.')
-
-        
     else:
         form = SignUpForm()
     
     return render(request, 'signup.html', {'form': form})
-
-
 
 def email_verified(request):
     return render(request, 'email_verified.html')

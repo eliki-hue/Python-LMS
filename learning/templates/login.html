@@ -100,5 +100,7 @@ form input:focus {
         <button type="submit" class="btn-submit">Login</button>
     </form>
     <p class="register-link">New here? <a href="{% url 'signup' %}">Create an account</a></p>
+    <!-- <a href="{% url 'password_change' %}">Change Password</a> -->
+    <p><a href="{% url 'password_reset' %}">Forgot Password?</a></p>
 </div>
 {% endblock %}
