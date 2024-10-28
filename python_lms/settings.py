@@ -58,14 +58,94 @@ CKEDITOR_UPLOAD_PATH = "uploads/"
 #         'codeSnippet_theme': 'monokai_sublime',
 #     },
 # }
+# CKEDITOR_5_CONFIGS = {
+#     'default': {
+#         'toolbar': 'full',  # Choose toolbar layout as needed
+#         'height': 300,
+#         'width': '100%',
+#         'image': {
+#             'upload': {
+#                 'url': '/ckeditor5/upload/',  # Match this URL to the correct path
+#                 'type': 'POST',
+#                 'method': 'formData',
+#             },
+#         },
+#     }
+# }
 CKEDITOR_5_CONFIGS = {
     'default': {
-        'toolbar': 'full',  # Options: 'basic', 'default', or 'full'
-        'height': 300,
-        'width': '100%',
-        'image': {
-            'upload': {'url': '/upload_image/'},  # URL for handling uploads
+        'toolbar': ['heading', '|', 'bold', 'italic', 'link',
+                    'bulletedList', 'numberedList', 'blockQuote', 'imageUpload','CodeBlock','Table',
+            {'name': 'clipboard', 'items': ['Cut', 'Copy', 'Paste', 'Undo', 'Redo']},
+            {'name': 'alignment', 'items': ['alignment:left', 'alignment:center', 'alignment:right', 'alignment:justify']},
+            {'name': 'editing', 'items': ['Find', 'Replace', 'SelectAll']},
+            {'name': 'basicstyles', 'items': ['Bold', 'Italic', 'Underline', 'Strike', 'RemoveFormat']},
+            {'name': 'paragraph', 'items': ['NumberedList', 'BulletedList', 'Blockquote', 'CreateDiv']},
+            {'name': 'insert', 'items': ['ImageUpload', 'Table', 'HorizontalRule', 'SpecialChar']},  # Add CodeBlock
+            {'name': 'styles', 'items': ['Styles', 'Format']},
+            {'name': 'tools', 'items': ['Maximize']}, 
+            ],
+         'image': {
+            'toolbar': [
+                'imageTextAlternative', 
+                'imageTitle', 
+                '|', 
+                'imageStyle:alignLeft', 
+                'imageStyle:full', 
+                'imageStyle:alignRight', 
+                'imageStyle:alignCenter', 
+                'imageStyle:side'
+            ],
+            'styles': ['full', 'side', 'alignLeft', 'alignRight', 'alignCenter']
         },
+    },
+    'extends': {
+        'blockToolbar': [
+            'paragraph', 'heading1', 'heading2', 'heading3',
+            '|',
+            'bulletedList', 'numberedList',
+            '|',
+            'blockQuote', 'imageUpload'
+        ],
+        'toolbar': ['heading', '|', 'outdent', 'indent', '|', 'bold', 'italic', 'link', 'underline', 'strikethrough',
+        'code','subscript', 'superscript', 'highlight', '|', 'codeBlock',
+                    'bulletedList', 'numberedList', 'todoList', '|',  'blockQuote', 'imageUpload', '|',
+                    'fontSize', 'fontFamily', 'fontColor', 'fontBackgroundColor', 'mediaEmbed', 'removeFormat',
+                    'insertTable',],
+
+        'image': {
+            'toolbar': ['imageTextAlternative', 'imageTitle', '|', 'imageStyle:alignLeft', 'imageStyle:full',
+                        'imageStyle:alignRight', 'imageStyle:alignCenter', 'imageStyle:side',  '|'],
+            'styles': [
+                'full',
+                'side',
+                'alignLeft',
+                'alignRight',
+                'alignCenter',]
+            },
+        'table': {
+            'contentToolbar': [ 'tableColumn', 'tableRow', 'mergeTableCells',
+            'tableProperties', 'tableCellProperties' ],
+            'tableProperties': {
+                
+            },
+            'tableCellProperties': {
+                
+            }
+        },
+        'heading' : {
+            'options': [
+                { 'model': 'paragraph', 'title': 'Paragraph', 'class': 'ck-heading_paragraph' },
+                { 'model': 'heading1', 'view': 'h1', 'title': 'Heading 1', 'class': 'ck-heading_heading1' },
+                { 'model': 'heading2', 'view': 'h2', 'title': 'Heading 2', 'class': 'ck-heading_heading2' },
+                { 'model': 'heading3', 'view': 'h3', 'title': 'Heading 3', 'class': 'ck-heading_heading3' }
+            ],
+             'height': 400,
+        'width': '100%',
+        'image': {'upload': {'url': '/ckeditor5/upload/'}},
+        'filebrowserUploadUrl': '/ckeditor5/upload/',
+        'extraPlugins': ['image2', 'uploadimage', 'autolink', 'codeBlock'],  # Include the CodeBlock plugin
+        }
     }
 }
 

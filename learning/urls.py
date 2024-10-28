@@ -17,6 +17,7 @@ urlpatterns = [
     path('course/<int:course_id>/lesson/<int:lesson_id>/', views.lesson_detail, name='lesson_detail'),
     # path('ckeditor/', include('ckeditor_uploader.urls')),
     path('upload_image/', upload_image, name='upload_image'),
+    path('ckeditor5/', include('django_ckeditor_5.urls')),
 
 ]
 
