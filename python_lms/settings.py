@@ -29,7 +29,7 @@ SECRET_KEY = 'django-insecure-9od=10bdau&+gx5n4khdggg310w_5k^^=1v*2je0pytyd0v2+j
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['.127.0.0.1','.localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['.127.0.0.1','.localhost', '127.0.0.1','https://elikilms.up.railway.app/']
 
 
 # Application definition
@@ -48,30 +48,7 @@ INSTALLED_APPS = [
 ]
 
 CKEDITOR_UPLOAD_PATH = "uploads/"
-# Configure the CKEditor
-# CKEDITOR_CONFIGS = {
-#     'default': {
-#         'toolbar': 'full',
-#         'height': 300,
-#         'width': '100%',
-#         'extraPlugins': 'codesnippet',
-#         'codeSnippet_theme': 'monokai_sublime',
-#     },
-# }
-# CKEDITOR_5_CONFIGS = {
-#     'default': {
-#         'toolbar': 'full',  # Choose toolbar layout as needed
-#         'height': 300,
-#         'width': '100%',
-#         'image': {
-#             'upload': {
-#                 'url': '/ckeditor5/upload/',  # Match this URL to the correct path
-#                 'type': 'POST',
-#                 'method': 'formData',
-#             },
-#         },
-#     }
-# }
+
 CKEDITOR_5_CONFIGS = {
     'default': {
         'toolbar': ['heading', '|', 'bold', 'italic', 'link',
