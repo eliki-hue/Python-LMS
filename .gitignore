@@ -1,2 +1,4 @@
 .env
 virtual
+_pycache_
+.venv

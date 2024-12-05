@@ -64,6 +64,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'django.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -104,11 +105,11 @@ if config('MODE')=='dev':
     # }
         'default': {
             'ENGINE': 'django.db.backends.postgresql_psycopg2',
-            # 'NAME': config('NAME'),
-            # 'USER':config('USER'),
-            # 'PASSWORD':config("PASSWORD"),
-            # 'HOST':config('HOST'),
-            # 'PORT':config('PORT')
+            'NAME': config('DB_NAME'),
+            'USER':config('DB_USER'),
+            'PASSWORD':config("DB_PASSWORD"),
+            'HOST':config('DB_HOST'),
+            'PORT':config('PORT')
             
         }
     # DATABASES = {
