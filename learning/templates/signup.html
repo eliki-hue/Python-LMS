@@ -3,7 +3,7 @@
 {% block content %}
 <head>
     <style>
-       .signup-container {
+       /* .signup-container {
     max-width: 450px;
     margin: 0 auto;
     padding: 20px;
@@ -79,37 +79,203 @@ form input:focus {
 .login-link a:hover {
     text-decoration: underline;
 }
+ */
 
-/*  */
+
+ .signup-header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.signup-header h2 {
+    margin-bottom: 10px;
+    color: #2a9d8f;
+}
+
+.signup-header p {
+    color: #555;
+}
+
+ form {
+    max-width: 450px;
+    margin: 10px auto;
+    padding: 10px;
+    border-radius: 15px;
+    background-color: #f0f8ff;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Style the form fields */
+form input[type="text"],
+form input[type="email"],
+form input[type="password"],
+form button[type="submit"] {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 8px;
+    border: 2px solid #ccc;
+    box-sizing: border-box;
+    font-size: 16px;
+    background-color: #fafafa;
+    transition: border 0.3s ease, background-color 0.3s ease;
+}
+
+/* Focus effect on input fields */
+form input:focus {
+    border: 2px solid #87ceeb;
+    background-color: #e6f7ff;
+    outline: none;
+}
+
+/* Placeholder text style */
+form input::placeholder {
+    color: #aaa;
+}
+
+/* Style the labels */
+form label {
+    font-size: 14px;
+    color: #333;
+    font-weight: 600;
+}
+
+/* Style the submit button */
+form button[type="submit"] {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 18px;
+    font-weight: bold;
+    padding: 10px;
+    border-radius: 8px;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+form button[type="submit"]:hover {
+    background-color: #45a049;
+    transform: scale(1.05);
+}
+
+/* Heading styles */
+h1 {
+    text-align: center;
+    color: #4CAF50;
+    font-family: 'Arial', sans-serif;
+    margin-bottom: 30px;
+}
+
+/* Small helper text */
+small {
+    display: block;
+    margin-top: -8px;
+    margin-bottom: 10px;
+    color: #777;
+    font-size: 12px;
+}
+
+/* Error message style */
+.errorlist {
+    color: red;
+    font-size: 12px;
+}
+
+/* Responsive design */
+@media (max-width: 600px) {
+    form {
+        width: 90%;
+        padding: 20px;
+    }
+}
     </style>
 </head>
 <div class="signup-container">
     <div class="signup-box">
         <h2>Join the Fun!</h2>
-        <form method="post">
+        <form method="POST">
             {% csrf_token %}
+            
+            <!-- Check if there are any non-field errors (general form errors) -->
+            {% if form.non_field_errors %}
+                <div class="errorlist">
+                    {{ form.non_field_errors }}
+                </div>
+            {% endif %}
+        
+            <!-- Loop through each form field -->
             <div class="form-group">
-                {{ form.username.label_tag }}
+                <label for="first_name">First Name</label>
+                {{ form.first_name }}
+                <!-- Display errors for first_name -->
+                {% if form.first_name.errors %}
+                    <div class="errorlist">
+                        {{ form.first_name.errors }}
+                    </div>
+                {% endif %}
+            </div>
+        
+            <div class="form-group">
+                <label for="last_name">Last Name</label>
+                {{ form.last_name }}
+                <!-- Display errors for last_name -->
+                {% if form.last_name.errors %}
+                    <div class="errorlist">
+                        {{ form.last_name.errors }}
+                    </div>
+                {% endif %}
+            </div>
+        
+            <div class="form-group">
+                <label for="username">Username</label>
                 {{ form.username }}
+                <!-- Display errors for username -->
                 {% if form.username.errors %}
-                    <div class="error">{{ form.username.errors }}</div>
+                    <div class="errorlist">
+                        {{ form.username.errors }}
+                    </div>
                 {% endif %}
             </div>
+        
             <div class="form-group">
-                {{ form.email.label_tag }}
+                <label for="email">Email</label>
                 {{ form.email }}
+                <!-- Display errors for email -->
                 {% if form.email.errors %}
-                    <div class="error">{{ form.email.errors }}</div>
+                    <div class="errorlist">
+                        {{ form.email.errors }}
+                    </div>
                 {% endif %}
             </div>
+        
             <div class="form-group">
-                {{ form.password.label_tag }}
-                {{ form.password }}
-                {% if form.password.errors %}
-                    <div class="error">{{ form.password.errors }}</div>
+                <label for="password1">Password</label>
+                {{ form.password1 }}
+                <!-- Display errors for password1 -->
+                {% if form.password1.errors %}
+                    <div class="errorlist">
+                        {{ form.password1.errors }}
+                    </div>
                 {% endif %}
             </div>
-            <button type="submit" class="btn-submit">Get Started!</button>
+        
+            <div class="form-group">
+                <label for="password2">Confirm Password</label>
+                {{ form.password2 }}
+                <!-- Display errors for password2 -->
+                {% if form.password2.errors %}
+                    <div class="errorlist">
+                        {{ form.password2.errors }}
+                    </div>
+                {% endif %}
+            </div>
+        
+            <!-- Submit button -->
+            <button type="submit">Sign Up</button>
+
+            
+        
         </form>
     </div>
 </div>
