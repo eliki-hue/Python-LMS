@@ -176,19 +176,19 @@ if config('MODE')=='dev':
             'USER':config('DB_USER'),
             'PASSWORD':config("DB_PASSWORD"),
             'HOST':config('DB_HOST'),
-            'PORT':config('PORT')
+            'PORT':config('DB_PORT')
             
         }
     
     }
 else:
     DATABASES = {
-        'default': dj_database_url.config(
-            default= config('DATABASE_URL')
-        )
+        # 'default': dj_database_url.config(
+        #     default= config('DATABASE_URL')
+        # )
     }
 db_from_env = dj_database_url.config(conn_max_age=500)
-DATABASES['default'].update(db_from_env)
+# DATABASES['default'].update(db_from_env)
 
 # ALLOWED_HOSTS = config('ALLOWED_HOSTS', cast= Csv())
 # Password validation
