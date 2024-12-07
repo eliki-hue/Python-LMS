@@ -166,29 +166,59 @@ WSGI_APPLICATION = 'python_lms.wsgi.application'
 
 if config('MODE')=='dev':
      DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'mylms_database',  # Database name
+        'USER': 'mylms_database_user',  # Database username
+        'PASSWORD': 'mPa4s0pANFIKIqbUzUPYWGvwvsRePWfj',  # Password
+        'HOST': 'dpg-ct7f67q3esus73br84v0-a.oregon-postgres.render.com',  # Hostname
+        'PORT': '5432',  # Port
+    }
+
     #        'default': {
     #         'ENGINE': 'django.db.backends.sqlite3',
     #         'NAME': BASE_DIR / 'db.sqlite3',  # This stores the SQLite3 database in the project root
     # }
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql_psycopg2',
-            'NAME': config('DB_NAME'),
-            'USER':config('DB_USER'),
-            'PASSWORD':config("DB_PASSWORD"),
-            'HOST':config('DB_HOST'),
-            'PORT':config('DB_PORT')
+        # 'default': {
+        #     'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        #     'NAME': config('DB_NAME'),
+        #     'USER':config('DB_USER'),
+        #     'PASSWORD':config("DB_PASSWORD"),
+        #     'HOST':config('DB_HOST'),
+        #     'PORT':config('DB_PORT')
             
-        }
+        # }postgresql://mylms_database_user:mPa4s0pANFIKIqbUzUPYWGvwvsRePWfj@dpg-ct7f67q3esus73br84v0-a.oregon-postgres.render.com/mylms_database
     
     }
 else:
     DATABASES = {
-        'default': dj_database_url.config(
-            default= config('DATABASE_URL')
-        )
+        # 'default': dj_database_url.config(
+        #     default= config('DATABASE_URL')
+        # )
+         'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'mylms_database',
+        'USER': 'mylms_database_user',
+        'PASSWORD': 'mPa4s0pANFIKIqbUzUPYWGvwvsRePWfj',
+        'HOST': '35.227.164.209',
+        'PORT': '5432',
+        'OPTIONS': {
+            'sslmode': 'require',
+        },
+    
+
+    }
     }
 db_from_env = dj_database_url.config(conn_max_age=500)
 DATABASES['default'].update(db_from_env)
+
+
+print("Database settings:")
+print("NAME:", os.getenv("DB_NAME"))
+print("USER:", os.getenv("DB_USER"))
+print("HOST:", os.getenv("DB_HOST"))
+print("PASSWORD:", os.getenv("DB_PASSWORD"))
+
 
 # ALLOWED_HOSTS = config('ALLOWED_HOSTS', cast= Csv())
 # Password validation
