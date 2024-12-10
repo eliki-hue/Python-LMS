@@ -27,6 +27,9 @@ from .models import Course, Lesson, Progress, Profile
 def home(request):
     return render(request, "home_page.html" )
 
+def paths(request):
+    return render(request, "paths.html" )
+
 # ckeditor view to handle file import
 @csrf_exempt
 def upload_image(request):
