@@ -1,93 +1,132 @@
-{% extends 'base.html' %}
+<!-- {% extends 'base.html' %} -->
 
-{% block content %}
+<!-- {% block content %} -->
 <head>
     <style>
+        /* Background with gradient and smooth transition */
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #4a90e2, #50e3c2);
+            background-size: 600% 600%;
+            animation: backgroundGradient 20s ease infinite;
+            font-family: 'Arial', sans-serif;
+        }
+
+        /* Keyframe animation for smooth gradient transition */
+        @keyframes backgroundGradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Center the login container */
         .login-container {
-    max-width: 400px;
-    margin: 0 auto;
-    padding: 20px;
-    border: 1px solid #ddd;
-    border-radius: 12px;
-    background-color: #f9f9f9;
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
-    text-align: center;
-}
+            max-width: 400px;
+            margin: 0 auto;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 12px;
+            background-color: #ffffff;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
 
-.login-header {
-    margin-bottom: 20px;
-}
+        /* Login header styling */
+        .login-header {
+            margin-bottom: 20px;
+        }
 
-.login-header h2 {
-    color: #4a90e2;
-    font-size: 24px;
-    margin-bottom: 10px;
-}
+        .login-header h2 {
+            color: #4a90e2;
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
 
-.login-header p {
-    color: #666;
-    font-size: 16px;
-}
+        .login-header p {
+            color: #666;
+            font-size: 16px;
+        }
 
-form {
-    display: flex;
-    flex-direction: column;
-}
+        /* Form styling */
+        form {
+            display: flex;
+            flex-direction: column;
+        }
 
-form p {
-    margin-bottom: 10px;
-}
+        form p {
+            margin-bottom: 10px;
+        }
 
-form input {
-    padding: 12px;
-    margin-bottom: 15px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    font-size: 16px;
-    transition: border-color 0.3s, box-shadow 0.3s;
-}
+        form input {
+            padding: 12px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
 
-form input:focus {
-    border-color: #4a90e2;
-    box-shadow: 0 0 8px rgba(74, 144, 226, 0.2);
-    outline: none;
-}
+        form input:focus {
+            border-color: #4a90e2;
+            box-shadow: 0 0 8px rgba(74, 144, 226, 0.2);
+            outline: none;
+        }
 
-.btn-submit {
-    padding: 12px;
-    background-color: #4a90e2;
-    color: #fff;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 16px;
-    transition: background-color 0.3s;
-}
+        .btn-submit {
+            padding: 12px;
+            background-color: #4a90e2;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
 
-.btn-submit:hover {
-    background-color: #357ABD;
-}
+        .btn-submit:hover {
+            background-color: #357ABD;
+        }
 
-.register-link {
-    margin-top: 20px;
-    font-size: 14px;
-    color: #666;
-}
+        .register-link {
+            margin-top: 20px;
+            font-size: 14px;
+            color: #666;
+        }
 
-.register-link a {
-    color: #4a90e2;
-    text-decoration: none;
-    font-weight: bold;
-}
+        .register-link a {
+            color: #4a90e2;
+            text-decoration: none;
+            font-weight: bold;
+        }
 
-.register-link a:hover {
-    text-decoration: underline;
-}
+        .register-link a:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsive design for smaller screens */
+        @media screen and (max-width: 480px) {
+            .login-container {
+                width: 90%;
+                padding: 15px;
+            }
+
+            .login-header h2 {
+                font-size: 1.8rem;
+            }
+
+            .login-header p {
+                font-size: 0.9rem;
+            }
+        }
     </style>
 </head>
-
-
-
 
 <div class="login-container">
     <div class="login-header">
@@ -100,7 +139,6 @@ form input:focus {
         <button type="submit" class="btn-submit">Login</button>
     </form>
     <p class="register-link">New here? <a href="{% url 'signup' %}">Create an account</a></p>
-    <!-- <a href="{% url 'password_change' %}">Change Password</a> -->
     <p><a href="{% url 'password_reset' %}">Forgot Password?</a></p>
 </div>
-{% endblock %}
+<!-- {% endblock %} -->

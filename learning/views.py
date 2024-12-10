@@ -24,6 +24,9 @@ from django.core.files.base import ContentFile
 from .forms import SignUpForm
 from .models import Course, Lesson, Progress, Profile
 
+def home(request):
+    return render(request, "home_page.html" )
+
 # ckeditor view to handle file import
 @csrf_exempt
 def upload_image(request):
