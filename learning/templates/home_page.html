@@ -117,7 +117,7 @@
             }
     
             .feature-card {
-                width: 280px;
+                width:500px;
                 text-align: center;
                 background-color: #fff;
                 padding: 20px;
@@ -132,9 +132,10 @@
             }
     
             .feature-card img {
-                width: 80px;
-                height: 80px;
-                margin-bottom: 20px;
+                width: 100%;
+                /* height: 80px; */
+
+                /* margin: 20px; */
             }
     
             .feature-card h3 {
@@ -253,10 +254,7 @@
     text-align: left;
 }
 
-.feature-image {
-    width: 90px;
-    height: 90px;
-}
+
 
 .feature-text {
     flex: 1;
@@ -284,7 +282,7 @@
             }
         </style>
     </head>
-    
+    {% load static %}
     <div class="landing-container">
         <!-- Landing header -->
         <div class="landing-header">
@@ -319,21 +317,21 @@
             <button class="cta-button">Get Started Today</button>
         </a>
     </div>
-    
+
     <!-- Features Section -->
     <div class="features-section" id="learn-more">
         <div class="feature-card">
-            <img src="https://via.placeholder.com/90" alt="Python">
+            <img src="{% static 'learning/images/Python icon2.png' %}" alt="Python" class="feature-image">
             <h3>Master Python</h3>
             <p>Learn Python programming from scratch, building applications and automation tools.</p>
         </div>
         <div class="feature-card">
-            <img src="https://via.placeholder.com/90" alt="Robotics">
+            <img src="{% static 'learning/images/robotic icon.png' %}" alt="Robotics" class="feature-image">
             <h3>Explore Robotics</h3>
             <p>Design and control robots, explore automation and Internet of Things (IoT).</p>
         </div>
         <div class="feature-card">
-            <img src="https://via.placeholder.com/90" alt="Web Development">
+            <img src="{% static 'learning/images/webdev.png' %}" alt="Web Development" class="feature-image">
             <h3>Become a Web Developer</h3>
             <p>Build websites, create interactive web applications, and master front-end and back-end development.</p>
         </div>
@@ -351,7 +349,7 @@
     
     <!-- Footer Section -->
     <div class="footer">
-        &copy; 2024 Your Tech Academy. All rights reserved.
+        &copy; 2024 elicode Academy. All rights reserved.
     </div>
     
 </div>

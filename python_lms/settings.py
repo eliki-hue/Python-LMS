@@ -138,6 +138,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django.contrib.staticfiles.middleware.StaticFilesMiddleware',
 ]
 
 ROOT_URLCONF = 'python_lms.urls'
@@ -183,17 +184,17 @@ if config('MODE')=='dev':
         }
     
     }
-# else:
-#     DATABASES = {
-#         'default': dj_database_url.config(
-#             default= config('DATABASE_URL')
-#         )
+else:
+    DATABASES = {
+        'default': dj_database_url.config(
+            default= config('DATABASE_URL')
+        )
          
 
     
-#     }
+    }
 db_from_env = dj_database_url.config(conn_max_age=500)
-# DATABASES['default'].update(db_from_env)
+DATABASES['default'].update(db_from_env)
 
 
 
@@ -237,8 +238,8 @@ LOGIN_REDIRECT_URL = '/'
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
-STATIC_URL = 'static/'
-STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATIC_URL = '/static/'
+STATIC_ROOT = BASE_DIR / 'static'
 STATIC_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Default primary key field type

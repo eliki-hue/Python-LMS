@@ -93,7 +93,7 @@ def user_login(request):
             if user is not None:
                 login(request, user)
                 messages.success(request, f'Welcome back, {user.username}!')
-                return redirect('course_list')
+                return redirect('paths')
             else:
                 messages.error(request, 'Invalid username or password.')
         else:
