@@ -1,10 +1,29 @@
-{% extends 'base.html' %}
+
 
 {% block content %}
 <head>
     <style>
-       /* .signup-container {
-    max-width: 450px;
+         body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #4a90e2, #50e3c2);
+            background-size: 600% 600%;
+            animation: backgroundGradient 20s ease infinite;
+            font-family: 'Arial', sans-serif;
+        }
+
+        /* Keyframe animation for smooth gradient transition */
+        @keyframes backgroundGradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        .signup-container {
+    max-width: 600px;
     margin: 0 auto;
     padding: 20px;
     border: 1px solid #ddd;
@@ -41,7 +60,7 @@ form input {
     margin-bottom: 15px;
     border: 1px solid #ddd;
     border-radius: 8px;
-    font-size: 16px;
+    font-size: 22px;
     outline: none;
 }
 
@@ -97,7 +116,7 @@ form input:focus {
 }
 
  form {
-    max-width: 450px;
+    max-width: 600px;
     margin: 10px auto;
     padding: 10px;
     border-radius: 15px;
@@ -136,7 +155,7 @@ form input::placeholder {
 
 /* Style the labels */
 form label {
-    font-size: 14px;
+    font-size: 22px;
     color: #333;
     font-weight: 600;
 }
@@ -277,6 +296,7 @@ small {
             
         
         </form>
+        <p class="login-link">Already have an account? <a href="{% url 'login' %}">Log In</a></p>
     </div>
 </div>
 {% endblock %}

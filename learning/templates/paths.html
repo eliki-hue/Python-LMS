@@ -3,13 +3,15 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Vibrant Web3 Coding Learning</title>
+  <title>elicode</title>
   <style>
     body {
       margin: 0;
       font-family: 'Arial', sans-serif;
-      background: linear-gradient(135deg, #ff0080, #ff8c00, #40e0d0, #1e90ff, #7b68ee);
-      background-size: 600% 600%;
+      background: linear-gradient(135deg, #4a90e2, #50e3c2);
+      /* background: blue; */
+      /* background: linear-gradient(135deg, #ff0080, #ff8c00, #40e0d0, #1e90ff, #7b68ee); */
+      background-size: 200% 200%;
       animation: backgroundGradient 20s ease infinite; /* Smooth transition */
       color: #fff;
       display: flex;
@@ -156,6 +158,7 @@
       position: absolute;
       width: 10px;
       height: 10px;
+      /* background:  #fbff00;; */
       background: rgba(255, 255, 255, 0.8);
       border-radius: 50%;
       animation: moveParticle 5s infinite linear;
@@ -192,10 +195,11 @@
   </style>
 </head>
 <body>
+  {% load static%}
   <div class="container">
     <a href="/python-content" class="card">
         <div>
-      <div class="card-icon"><img src="pythonlogo.png" alt="" style="width: 80px; height: 80px; object-fit: contain;filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.8));"></div>
+      <div class="card-icon"><img src="{% static 'learning/images/Pythonlogo.png' %}" alt="" style="width: 80px; height: 80px; object-fit: contain;filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.8));"></div>
       <div class="card-title">Python</div>
       </div>
       <!-- <div class="progress-bar"><div class="progress-bar-inner"></div></div> -->
