@@ -147,6 +147,22 @@ def course_detail(request, course_id):
     return render(request, 'course_detail.html', context)
 
 
+
+
+@login_required
+def course_lessons(request, course_title):
+    # Get the course by title
+    course = get_object_or_404(Course, title__iexact=course_title)
+    # Fetch all lessons for the course
+    lessons = course.lessons.all()  # Related name "lessons" is used here
+    context = {
+        'course': course,
+        'lessons': lessons,
+    }
+    return render(request, 'course_lessons.html', context)
+
+
+
 @login_required
 def lesson_detail(request, course_id, lesson_id):
     """
