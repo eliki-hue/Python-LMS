@@ -159,7 +159,7 @@ def course_lessons(request, course_title):
         'course': course,
         'lessons': lessons,
     }
-    return render(request, 'course_lessons.html', context)
+    return render(request, 'lesson_detail.html', context)
 
 
 

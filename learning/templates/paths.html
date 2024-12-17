@@ -197,21 +197,21 @@
 <body>
   {% load static%}
   <div class="container">
-    <a href="{% url 'course_lessons' 'python' %}" class="card">
+    <a href="{% url 'course_lessons' course_title='Python' %}" class="card">
         <div>
       <div class="card-icon"><img src="{% static 'learning/images/Pythonlogo.png' %}" alt="" style="width: 80px; height: 80px; object-fit: contain;filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.8));"></div>
       <div class="card-title">Python</div>
       </div>
       <!-- <div class="progress-bar"><div class="progress-bar-inner"></div></div> -->
     </a>
-    <a href="{% url 'course_lessons' 'robotics' %}" class="card">
+    <a href="{% url 'course_lessons' course_title='robotics' %}" class="card">
         <div>
             <div class="card-icon">🤖</div>
             <div class="card-title">Robotics</div>
             <!-- <div class="progress-bar"><div class="progress-bar-inner"></div></div> -->
         </div>
     </a>
-    <a href="{% url 'course_lessons' 'html' %}" class="card">
+    <a href="{% url 'course_lessons' course_title='html' %}" class="card">
         <div>
             <div class="card-icon">🌐</div>
             <div class="card-title">HTML</div>

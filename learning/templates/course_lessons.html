@@ -1,19 +1,24 @@
 {% extends "base.html" %}
+{% block content %}
+
 <head>
     <title>{{ course.title }} Lessons</title>
 </head>
 <body>
     <h1>{{ course.title }} Lessons</h1>
     <p>{{ course.description }}</p>
-    <h2>Level: {{ course.level | title }}</h2>
 
     <ul>
         {% for lesson in lessons %}
             <li>
-                <h3>{{ lesson.title }}</h3>
+                <h2>{{ lesson.title }}</h2>
                 <p>{{ lesson.content | safe }}</p>
             </li>
         {% endfor %}
     </ul>
+
+    <a href="/">Go back to courses</a>
+
 </body>
 </html>
+{% endblock %}

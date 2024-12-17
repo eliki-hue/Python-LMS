@@ -4,83 +4,114 @@
 <head>
     <style>
         .lesson-container {
-    display: flex;
-    align-items: flex-start; /* Ensures both side panel and content align at the top */
-}
+            display: flex;
+            align-items: flex-start;
+        }
 
-.side-panel {
-    width: 25%; /* Adjust the width of the side panel */
-    background-color: #f7f7f7;
-    padding: 20px;
-    border-right: 1px solid #ddd;
-    box-sizing: border-box; /* Ensure padding does not affect width */
-    height: 100vh; /* Make it full height if needed */
-    overflow-y: auto; /* Add scroll if content overflows */
-}
+        .side-panel {
+            width: 20%;
+            background-color: #f7f7f7;
+            padding: 20px;
+            border-right: 1px solid #ddd;
+            box-sizing: border-box;
+            height: 100vh;
+            overflow-y: auto;
+        }
 
-.lesson-content {
-    width: 75%; /* Remaining width for the content */
-    padding: 20px;
-    box-sizing: border-box;
-}
+        .lesson-content {
+            width: 80%;
+            padding: 20px;
+            box-sizing: border-box;
+        }
 
-.lesson-list {
-    list-style-type: none;
-    padding: 0;
-}
+        .lesson-list {
+            list-style-type: none;
+            padding: 0;
+        }
 
-.lesson-list li {
-    margin-bottom: 10px;
-}
+        .lesson-list li {
+            margin-bottom: 10px;
+        }
 
-.lesson-list li.active a {
-    font-weight: bold;
-    color: #f76b1c;
-}
+        .lesson-list li.active a {
+            font-weight: bold;
+            color: #f76b1c;
+        }
 
-.lesson-list a {
-    text-decoration: none;
-    color: #333;
-}
+        .lesson-list a {
+            text-decoration: none;
+            color: #333;
+        }
 
-.lesson-list a:hover {
-    text-decoration: underline;
-    color: #f76b1c;
-}
+        .lesson-list a:hover {
+            text-decoration: underline;
+            color: #f76b1c;
+        }
 
-.content-body {
-    margin-top: 20px;
-    line-height: 1.6;
-}
+        .content-body {
+            margin-top: 20px;
+            line-height: 1.6;
+        }
+
+        .next-lesson {
+            margin-top: 30px;
+            text-align: right;
+        }
+
+        .next-lesson a {
+            text-decoration: none;
+            color: white;
+            background-color: #f76b1c;
+            padding: 10px 20px;
+            border-radius: 4px;
+            display: inline-block;
+        }
+
+        .next-lesson a:hover {
+            background-color: #e65b1c;
+        }
     </style>
 </head>
 <div class="lesson-container">
+    <!-- Side Panel -->
     <div class="side-panel">
         <h3>Lessons in {{ course.title }}</h3>
         <ul class="lesson-list">
             {% for lesson in lessons %}
                 <li {% if lesson.id == lesson_id %}class="active"{% endif %}>
-                    <a href="{% url 'lesson_detail' course.id lesson.id %}">{{ lesson.title }}</a>
+                    <a href="{% url 'lesson_detail' course.id lesson.id %}">{{ lesson.title }} order: {{lesson.oder}}</a>
                 </li>
             {% endfor %}
         </ul>
         <nav>
-    <ul style="list-style: none;">
-        <li><a href="{% url 'course_detail' course.id %}">
-            <button type="button" style="padding: 10px 20px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">
-                Back to Lessons
-            </button>
-        </a></li>
-    </ul>
-</nav>
+            <ul style="list-style: none;">
+                <li>
+                    <a href="{% url 'paths' %}">
+                        <button type="button" style="padding: 10px 20px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                            Back to Courses
+                        </button>
+                    </a>
+                </li>
+            </ul>
+        </nav>
     </div>
+
+    <!-- Lesson Content -->
     <div class="lesson-content">
         <h1>{{ lesson.title }}</h1>
         <div class="content-body">
             {{ lesson.content|safe }}
         </div>
+
+        <!-- Next Lesson Arrow -->
+        {% if next_lesson %}
+        <div class="next-lesson">
+            <a href="{% url 'lesson_detail' course.id next_lesson.id %}">
+                Next Lesson ➡️
+            </a>
+        </div>
+        {% endif %}
     </div>
 </div>
-<script src="../script.js"></script>
 
 {% endblock %}

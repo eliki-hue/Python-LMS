@@ -9,12 +9,19 @@
         <ul>
         {% for course in courses %}
             <li>
-                <a href="{% url 'course_detail' course.id %}">{{ course.title }}</a> - {{ course.description }}
+                <a href="?course_id={{ course.id }}">{{ course.title }}</a> - {{ course.description }}
             </li>
+            {% if course.id|add:"" == request.GET.course_id %}
+                <ul>
+                {% for lesson in course.lessons.all %}
+                    <li>{{ lesson.title }}: {{ lesson.content|safe }}</li>
+                {% endfor %}
+                </ul>
+            {% endif %}
         {% endfor %}
         </ul>
     {% else %}
-        <p>No  courses available at the moment.</p>
+        <p>No courses available at the moment.</p>
     {% endif %}
 {% endfor %}
 
