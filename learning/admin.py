@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Course, Lesson
+from .models import Course, Lesson, Progress
 
 from django import forms
 from django.contrib import admin
@@ -7,7 +7,7 @@ from .models import Lesson
 from django_ckeditor_5.widgets import CKEditor5Widget
 
 admin.site.register(Course)
-# admin.site.register(Lesson)
+# admin.site.register(Progress)
 
 @admin.register(Lesson)
 class LessonAdmin(admin.ModelAdmin):

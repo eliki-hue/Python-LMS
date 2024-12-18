@@ -159,38 +159,73 @@ def course_lessons(request, course_title):
         'course': course,
         'lessons': lessons,
     }
+    
     return render(request, 'lesson_detail.html', context)
+
+
+@login_required
+# def lesson_detail(request, course_id, lesson_id):
+#     course = get_object_or_404(Course, id=course_id)
+#     lessons = course.lessons.all()
+#     lesson = get_object_or_404(Lesson, id=lesson_id, course=course)
+
+#     # Fetch the next lesson
+#     next_lesson = course.lessons.filter(order__gt=lesson.order).order_by('order').first()
+
+#     # Fetch the previous lesson
+#     previous_lesson = course.lessons.filter(order__lt=lesson.order).order_by('-order').first()
+
+#     context = {
+#         'course': course,
+#         'lessons': lessons,
+#         'lesson': lesson,
+#         'lesson_id': lesson_id,
+#         'next_lesson': next_lesson,
+#         'previous_lesson': previous_lesson,
+#     }
+#     return render(request, 'lesson_detail.html', context)
 
 
 
 @login_required
 def lesson_detail(request, course_id, lesson_id):
-    """
-    Display details of a specific lesson within a course.
-    """
     course = get_object_or_404(Course, id=course_id)
-    lesson = get_object_or_404(Lesson, id=lesson_id, course=course)
-    lessons = Lesson.objects.filter(course=course).order_by('id')  # Get all lessons in the course
-    print("courses:{course} lesson:{lesson}")
-    print(".......................................")
+    lesson = get_object_or_404(Lesson, id=lesson_id)
+    lessons = course.lessons.all()  # All lessons in the course
+    total_lessons = lessons.count()
 
-    # Track progress
+    # Fetch user's progress for this lesson
     progress, created = Progress.objects.get_or_create(user=request.user, lesson=lesson)
-    if not progress.completed:
+    is_completed = progress.completed
+
+    # Handle "Mark as Done" button submission
+    if request.method == 'POST' and 'mark_done' in request.POST:
         progress.completed = True
-        progress.completed_at = timezone.now()
         progress.save()
+        return redirect('lesson_detail', course_id=course.id, lesson_id=lesson.id)
 
+    # Fetch the count of completed lessons
+    completed_lessons = Progress.objects.filter(user=request.user, lesson__in=lessons, completed=True)
+    completed_count = completed_lessons.count()
 
-    context = {
+    # Calculate progress percentage
+    progress_percentage = (completed_count / total_lessons) * 100 if total_lessons > 0 else 0
+
+    # Get next and previous lessons based on order
+    lesson_order = lesson.order
+    previous_lesson = Lesson.objects.filter(course=course, order__lt=lesson_order).last()
+    next_lesson = Lesson.objects.filter(course=course, order__gt=lesson_order).first()
+
+    return render(request, 'lesson_detail.html', {
         'course': course,
         'lesson': lesson,
         'lessons': lessons,
-    }
-    
-    return render(request, 'lesson_detail.html', context)
-
-
+        'progress_percentage': progress_percentage,
+        'is_completed': is_completed,
+        'completed_lessons': completed_lessons,
+        'next_lesson': next_lesson,
+        'previous_lesson': previous_lesson,
+    })
 
 @login_required
 def admin_dashboard(request):
