@@ -2,7 +2,43 @@
 
 {% block content %}
 <head>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-okaidia.min.css" rel="stylesheet" />
+    <!-- Prism Core Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <!-- Prism Python Language Support -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+    <!-- Line Numbers Plugin (Optional) -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/line-numbers/prism-line-numbers.min.css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/line-numbers/prism-line-numbers.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-typescript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-clike.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-c.min.js"></script>
+    
+
+    <script>
+
+        // Function to escape HTML special characters
+        function escapeHTML(str) {
+          const replacements = {
+            '<': '&lt;',
+            '>': '&gt;',
+            '&': '&amp;',
+            '"': '&quot;',
+            "'": '&#39;'
+          };
+          return str.replace(/[<>&"']/g, char => replacements[char]);
+        }
+      
+        // Apply the escapeHTML function to all <code> blocks
+        document.querySelectorAll('pre code').forEach(codeBlock => {
+          codeBlock.innerHTML = escapeHTML(codeBlock.textContent);
+        });
+      </script>
+
+    
     <style>
+
+
         /* Ensure the body and html elements take up the full height */
         html, body {
             height: 100%;
@@ -16,6 +52,7 @@
             display: flex;
             height: calc(100vh - 136px); /* Subtract navbar (56px) + progress container (80px) */
             overflow: hidden; /* Prevent extra scrolling in the container */
+            
         }
 
         /* Sidebar styles */
@@ -27,16 +64,13 @@
             box-sizing: border-box;
             overflow-y: auto; /* Sidebar scrolls independently */
             margin-bottom:20px;
+
+            font-family: 'Roboto', 'Arial', 'Helvetica', sans-serif;
+            font-weight: 500; /* You can adjust the weight (400 is normal, 600 is bold) */
         }
 
         /* Lesson content styles */
-        .lesson-content {
-            width: 80%;
-            padding: 20px;
-            box-sizing: border-box;
-            overflow-y: auto; /* Content scrolls independently */
-            margin-bottom:20px;
-        }
+       
 
         .lesson-list {
             list-style-type: none;
@@ -53,19 +87,94 @@
         }
 
         .lesson-list a {
-            text-decoration: none;
-            color: #333;
+            {% comment %} font-family: 'Inter', sans-serif; {% endcomment %}
+            font-size: 1.3rem;
+    line-height: 1.7rem;
+    font-weight: 500;
+    color: #333; /* Adjust color if needed */
+    text-decoration: none;
+    {% comment %} padding: 5px 10px; {% endcomment %}
+    display: block;
+    border-radius: 5px;
+    transition: background-color 0.2s ease;
         }
 
         .lesson-list a:hover {
             text-decoration: underline;
             color: #f76b1c;
+            background-color: #f1f1f1; /* Light hover effect */
+
         }
 
         .content-body {
             margin-top: 20px;
             line-height: 1.6;
+    
+            margin-right:100px;
+          
+            
         }
+        /* Styling for the lesson-content div */
+        .lesson-content {
+            width: 80%;
+            padding: 20px;
+            box-sizing: border-box;
+            overflow-y: auto; /* Content scrolls independently */
+            margin-bottom:20px;
+            margin-right:50px;
+            margin-left:100px;
+            font-family: 'Open Sans', 'Roboto', Arial, sans-serif;
+            font-size: 16px; /* Base font size for easy reading */
+            line-height: 1.6; /* Good line spacing */
+            color: #333; /* Dark gray text for better contrast */
+        }
+
+  
+  /* Headers inside lesson-content */
+  .lesson-content h1, .lesson-content h2, .lesson-content h3, .lesson-content h4 {
+    font-family: 'Roboto', 'Arial', sans-serif;
+    color: #222; /* Slightly darker for headers */
+    margin-bottom: 15px;
+  }
+  
+  /* Code blocks with a monospace font inside lesson-content */
+  .lesson-content pre, .lesson-content code {
+    font-family: 'Source Code Pro', 'Courier New', monospace;
+    font-size: 18px; /* Slightly smaller for code */
+    background-color: #f4f4f4; /* Light background for code blocks */
+    padding: 10px;
+    border-radius: 5px;
+    color: #333;
+    line-height: 1.8;
+  }
+  
+  /* Links inside lesson-content */
+  .lesson-content a {
+    font-family: 'Open Sans', 'Roboto', Arial, sans-serif;
+    color: #007bff; /* Blue color for links */
+    text-decoration: none;
+  }
+  
+  .lesson-content a:hover {
+    text-decoration: underline;
+  }
+  
+  /* Button style inside lesson-content */
+  .lesson-content button {
+    font-family: 'Roboto', 'Arial', sans-serif;
+    font-size: 16px;
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .lesson-content button:hover {
+    background-color: #0056b3; /* Darker shade for hover effect */
+  }
+  
 
         /* Progress bar container */
         .progress-container {
@@ -156,6 +265,110 @@
                 width: 100%;
             }
         }
+
+
+/* Syntax highlighting colors for different languages */
+.lesson-content .language-python {
+    color: #dcdcdc;
+  }
+  
+  .lesson-content .language-python .keyword {
+    color: #569cd6; /* Python keywords */
+  }
+  
+  .lesson-content .language-python .string {
+    color: #d69d85; /* Python strings */
+  }
+  
+  .lesson-content .language-markup {
+    color: #dcdcdc;
+  }
+  
+  .lesson-content .language-markup .tag {
+    color: #569cd6; /* HTML tags */
+  }
+  
+  .lesson-content .language-markup .attr-name {
+    color: #9cdcfe; /* HTML attribute names */
+  }
+  
+  .lesson-content .language-javascript {
+    color: #dcdcdc;
+  }
+  
+  .lesson-content .language-javascript .keyword {
+    color: #c586c0; /* JavaScript keywords */
+  }
+  
+  .lesson-content .language-javascript .string {
+    color: #d69d85; /* JavaScript strings */
+  }
+  
+  /* Copy button style */
+  .lesson-content .copy-btn {
+    font-family: 'Roboto', Arial, sans-serif;
+    font-size: 14px;
+    padding: 8px 16px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 10px;
+  }
+  
+  .lesson-content .copy-btn:hover {
+    background-color: #0056b3;
+  }
+
+  /* Ensure punctuation in HTML is visible */
+.token.punctuation {
+    color: #ffcc00; /* Bright yellow for visibility */
+  }
+  
+  /* Style for HTML tags */
+  .token.tag {
+    color: #66d9ef; /* Bright cyan for visibility */
+  }
+  
+  /* Style for HTML attributes */
+  .token.attr-name {
+    color: #a6e22e; /* Bright green for visibility */
+  }
+  
+  /* Style for attribute values */
+  .token.attr-value {
+    color: #e6db74; /* Light yellow */
+  }
+  
+  /* Style for HTML comments */
+  .token.comment {
+    color: #75715e; /* Dim gray for comments */
+  }
+    /* Custom TypeScript Styling */
+    .language-c .token.keyword {
+        color: #c586c0; /* Purple for Arduino/C keywords */
+      }
+  
+      .language-c .token.function {
+        color: #9cdcfe; /* Cyan for Arduino functions */
+      }
+  
+      .language-c .token.comment {
+        color: #6a9955; /* Green for comments */
+      }
+  
+      .language-typescript .token.keyword {
+        color: #569cd6; /* Blue for TypeScript keywords */
+      }
+  
+      .language-typescript .token.function {
+        color: #dcdcaa; /* Yellow for TypeScript functions */
+      }
+  
+      .language-typescript .token.string {
+        color: #d69d85; /* Brown for strings */
+      }
     </style>
 </head>
 
@@ -213,6 +426,11 @@
                 <a href="{% url 'lesson_detail' course.id next_lesson.id %}">
                     <button>Next Lesson</button>
                 </a>
+                {% else %}
+                <button type="button" style="padding: 10px 20px; background-color: #6c757d; color: white; border: none; border-radius: 4px;" disabled>
+                    End of Course
+                </button>
+            
             {% endif %}
         </div>
     </div>
