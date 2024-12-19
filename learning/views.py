@@ -189,32 +189,45 @@ def course_lessons(request, course_title):
 
 @login_required
 def lesson_detail(request, course_id, lesson_id):
+    # Fetch the course and lesson
     course = get_object_or_404(Course, id=course_id)
     lesson = get_object_or_404(Lesson, id=lesson_id)
-    lessons = course.lessons.all()  # All lessons in the course
+
+    # Fetch all lessons in the course in a single query
+    lessons = course.lessons.all().order_by('order')  # Ensure lessons are ordered
+
+    # Fetch user's progress for the lessons in the course
+    user_progress = Progress.objects.filter(user=request.user, lesson__in=lessons).select_related('lesson')
+    completed_lessons_ids = user_progress.filter(completed=True).values_list('lesson_id', flat=True)
+
+    # Get the total number of lessons and completed lessons count
     total_lessons = lessons.count()
-
-    # Fetch user's progress for this lesson
-    progress, created = Progress.objects.get_or_create(user=request.user, lesson=lesson)
-    is_completed = progress.completed
-
-    # Handle "Mark as Done" button submission
-    if request.method == 'POST' and 'mark_done' in request.POST:
-        progress.completed = True
-        progress.save()
-        return redirect('lesson_detail', course_id=course.id, lesson_id=lesson.id)
-
-    # Fetch the count of completed lessons
-    completed_lessons = Progress.objects.filter(user=request.user, lesson__in=lessons, completed=True)
-    completed_count = completed_lessons.count()
+    completed_count = len(completed_lessons_ids)
 
     # Calculate progress percentage
     progress_percentage = (completed_count / total_lessons) * 100 if total_lessons > 0 else 0
 
-    # Get next and previous lessons based on order
-    lesson_order = lesson.order
-    previous_lesson = Lesson.objects.filter(course=course, order__lt=lesson_order).last()
-    next_lesson = Lesson.objects.filter(course=course, order__gt=lesson_order).first()
+    # Mark as done logic
+    current_progress, _ = Progress.objects.get_or_create(user=request.user, lesson=lesson)
+    if request.method == 'POST' and 'mark_done' in request.POST:
+        if not current_progress.completed:  # Only update if not already marked
+            current_progress.completed = True
+            current_progress.save()
+        # Redirect to ensure page reload and avoid duplicate form submissions
+        return redirect('lesson_detail', course_id=course.id, lesson_id=lesson.id)
+
+    # Determine if the current lesson is completed
+    is_completed = current_progress.completed
+
+    # Find the previous and next lessons
+    previous_lesson = lessons.filter(order__lt=lesson.order).last()
+    next_lesson = lessons.filter(order__gt=lesson.order).first()
+
+    # Check if the next lesson is locked
+    if next_lesson:
+        next_lesson_is_locked = next_lesson.id not in completed_lessons_ids and not is_completed
+    else:
+        next_lesson_is_locked = True
 
     return render(request, 'lesson_detail.html', {
         'course': course,
@@ -222,10 +235,31 @@ def lesson_detail(request, course_id, lesson_id):
         'lessons': lessons,
         'progress_percentage': progress_percentage,
         'is_completed': is_completed,
-        'completed_lessons': completed_lessons,
+        'completed_lessons_ids': completed_lessons_ids,
         'next_lesson': next_lesson,
+        'next_lesson_is_locked': next_lesson_is_locked,
         'previous_lesson': previous_lesson,
     })
+    
+def mark_lesson_done(request, lesson_id):
+    lesson = get_object_or_404(Lesson, id=lesson_id)
+    user = request.user
+
+    # Get or create Progress entry for the current lesson
+    progress, created = Progress.objects.get_or_create(user=user, lesson=lesson)
+
+    if not progress.completed:
+        # Mark current lesson as completed
+        progress.completed = True
+        progress.completed_at = now()
+        progress.save()
+
+        # Unlock the next lesson (if it exists)
+        next_lesson = Lesson.objects.filter(course=lesson.course, order=lesson.order + 1).first()
+        if next_lesson:
+            Progress.objects.get_or_create(user=user, lesson=next_lesson)
+
+    return redirect('lesson_detail', lesson_id=lesson.id)
 
 @login_required
 def admin_dashboard(request):

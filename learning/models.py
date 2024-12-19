@@ -30,10 +30,24 @@ class Lesson(models.Model):
     order = models.PositiveIntegerField()  # To order lessons in a course
 
     class Meta:
-        ordering = ['order']
+        ordering = ['order']  # Ensures lessons are always fetched in order
+        indexes = [
+            models.Index(fields=['course', 'order']),
+        ]
 
     def __str__(self):
         return self.title
+    
+    def is_locked(self, user):
+        """
+        Determines whether the lesson is locked for the given user.
+        A lesson is locked if the previous lesson is incomplete.
+        """
+        previous_lesson = Lesson.objects.filter(course=self.course, order__lt=self.order).last()
+        if previous_lesson:
+            previous_progress = Progress.objects.filter(user=user, lesson=previous_lesson).first()
+            return not previous_progress or not previous_progress.completed
+        return False
 
 class Progress(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='lesson_progress')
@@ -43,6 +57,10 @@ class Progress(models.Model):
 
     class Meta:
         unique_together = ('user', 'lesson')
+        indexes = [
+            models.Index(fields=['user', 'lesson']),
+            models.Index(fields=['lesson', 'completed']),
+        ]
 
     def __str__(self):
         return f'{self.user.username} - {self.lesson.title} - {"Completed" if self.completed else "Incomplete"}'
