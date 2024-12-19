@@ -19,6 +19,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
+from django.core.cache import cache
 
 
 from .forms import SignUpForm
@@ -188,57 +189,53 @@ def course_lessons(request, course_title):
 
 
 @login_required
+# @cache_page(60)  # Cache for 1 minute
 def lesson_detail(request, course_id, lesson_id):
-    # Fetch the course and lesson
+     # Get the course and all lessons in the correct order
     course = get_object_or_404(Course, id=course_id)
-    lesson = get_object_or_404(Lesson, id=lesson_id)
+    lessons = Lesson.objects.filter(course=course).order_by('order')
 
-    # Fetch all lessons in the course in a single query
-    lessons = course.lessons.all().order_by('order')  # Ensure lessons are ordered
+    # Fetch current lesson
+    lesson = get_object_or_404(lessons, id=lesson_id)
 
-    # Fetch user's progress for the lessons in the course
-    user_progress = Progress.objects.filter(user=request.user, lesson__in=lessons).select_related('lesson')
-    completed_lessons_ids = user_progress.filter(completed=True).values_list('lesson_id', flat=True)
+    # Preload progress for all lessons in the course
+    user_progress = Progress.objects.filter(user=request.user, lesson__course=course).select_related('lesson')
+    progress_dict = {progress.lesson.id: progress.completed for progress in user_progress}
 
-    # Get the total number of lessons and completed lessons count
-    total_lessons = lessons.count()
-    completed_count = len(completed_lessons_ids)
-
-    # Calculate progress percentage
-    progress_percentage = (completed_count / total_lessons) * 100 if total_lessons > 0 else 0
-
-    # Mark as done logic
+    # Handle "Mark as Done"
     current_progress, _ = Progress.objects.get_or_create(user=request.user, lesson=lesson)
     if request.method == 'POST' and 'mark_done' in request.POST:
-        if not current_progress.completed:  # Only update if not already marked
+        if not current_progress.completed:
             current_progress.completed = True
             current_progress.save()
-        # Redirect to ensure page reload and avoid duplicate form submissions
-        return redirect('lesson_detail', course_id=course.id, lesson_id=lesson.id)
+        return redirect('lesson_detail', course_id=course_id, lesson_id=lesson_id)
 
-    # Determine if the current lesson is completed
-    is_completed = current_progress.completed
+    # Calculate progress percentage
+    total_lessons = lessons.count()
+    completed_count = sum(progress_dict.values())
+    progress_percentage = (completed_count / total_lessons) * 100 if total_lessons > 0 else 0
 
-    # Find the previous and next lessons
-    previous_lesson = lessons.filter(order__lt=lesson.order).last()
-    next_lesson = lessons.filter(order__gt=lesson.order).first()
+    # Determine locking for lessons
+    previous_completed = True  # Assume the first lesson is unlocked
+    for lesson_item in lessons:
+        lesson_item.is_locked = not previous_completed
+        previous_completed = progress_dict.get(lesson_item.id, False)
 
-    # Check if the next lesson is locked
-    if next_lesson:
-        next_lesson_is_locked = next_lesson.id not in completed_lessons_ids and not is_completed
-    else:
-        next_lesson_is_locked = True
+    # Determine the previous and next lessons
+    lesson_index = list(lessons).index(lesson)
+    previous_lesson = lessons[lesson_index - 1] if lesson_index > 0 else None
+    next_lesson = lessons[lesson_index + 1] if lesson_index < len(lessons) - 1 else None
+    next_lesson_is_locked = next_lesson and next_lesson.is_locked
 
     return render(request, 'lesson_detail.html', {
         'course': course,
         'lesson': lesson,
         'lessons': lessons,
         'progress_percentage': progress_percentage,
-        'is_completed': is_completed,
-        'completed_lessons_ids': completed_lessons_ids,
+        'is_completed': current_progress.completed,
+        'previous_lesson': previous_lesson,
         'next_lesson': next_lesson,
         'next_lesson_is_locked': next_lesson_is_locked,
-        'previous_lesson': previous_lesson,
     })
     
 def mark_lesson_done(request, lesson_id):

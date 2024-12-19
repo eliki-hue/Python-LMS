@@ -177,6 +177,12 @@
     background-color: #0056b3; /* Darker shade for hover effect */
   }
   
+  .lesson-item.locked {
+    color: gray;
+    pointer-events: none;
+    text-decoration: none;
+    cursor: not-allowed;
+}
 
         /* Progress bar container */
         .progress-container {
@@ -265,6 +271,12 @@
             /* Make sure the progress bar is responsive */
             .progress-container {
                 width: 100%;
+            }
+            .lesson-item.locked {
+                color: gray;
+                pointer-events: none;
+                text-decoration: none;
+                cursor: not-allowed;
             }
         }
 
@@ -390,16 +402,21 @@
     <div class="side-panel">
         <h3>Lessons in {{ course.title }}</h3>
         <ul class="lesson-list">
-    {% for sidebar_lesson in lessons %}
-        <li class="{% if lesson.id == sidebar_lesson.id %}active{% endif %}">
-            {% if sidebar_lesson.id in completed_lessons_ids or lesson.id == sidebar_lesson.id %}
-            
-                <a href="{% url 'lesson_detail' course_id=course.id lesson_id=sidebar_lesson.id %}">{{ sidebar_lesson.title }}</a>
+            {% for lesson_item in lessons %}
+            {% if lesson_item.is_locked %}
+                <!-- Locked Lesson -->
+                <li class="lesson-item locked">
+                    <span>{{ lesson_item.title }}</span>
+                </li>
             {% else %}
-                <span style="pointer-events: none; color: gray;">{{ sidebar_lesson.title }}</span>
+                <!-- Active Lesson -->
+                <li class="lesson-item">
+                    <a href="{% url 'lesson_detail' course_id=course.id lesson_id=lesson_item.id %}">
+                        {{ lesson_item.title }}
+                    </a>
+                </li>
             {% endif %}
-        </li>
-    {% endfor %}
+        {% endfor %}
 </ul>
     </div>
 
