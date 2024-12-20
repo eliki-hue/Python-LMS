@@ -164,27 +164,7 @@ def course_lessons(request, course_title):
     return render(request, 'lesson_detail.html', context)
 
 
-@login_required
-# def lesson_detail(request, course_id, lesson_id):
-#     course = get_object_or_404(Course, id=course_id)
-#     lessons = course.lessons.all()
-#     lesson = get_object_or_404(Lesson, id=lesson_id, course=course)
 
-#     # Fetch the next lesson
-#     next_lesson = course.lessons.filter(order__gt=lesson.order).order_by('order').first()
-
-#     # Fetch the previous lesson
-#     previous_lesson = course.lessons.filter(order__lt=lesson.order).order_by('-order').first()
-
-#     context = {
-#         'course': course,
-#         'lessons': lessons,
-#         'lesson': lesson,
-#         'lesson_id': lesson_id,
-#         'next_lesson': next_lesson,
-#         'previous_lesson': previous_lesson,
-#     }
-#     return render(request, 'lesson_detail.html', context)
 
 
 
