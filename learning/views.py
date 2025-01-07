@@ -211,6 +211,7 @@ def lesson_detail(request, course_id, lesson_id):
         'course': course,
         'lesson': lesson,
         'lessons': lessons,
+        'completed_count':completed_count,
         'progress_percentage': progress_percentage,
         'is_completed': current_progress.completed,
         'previous_lesson': previous_lesson,
