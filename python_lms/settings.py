@@ -29,7 +29,7 @@ SECRET_KEY = 'django-insecure-9od=10bdau&+gx5n4khdggg310w_5k^^=1v*2je0pytyd0v2+j
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['.127.0.0.1','.localhost', '127.0.0.1','https://elikilms.up.railway.app/','elicode-021410ce9c03.herokuapp.com']
+ALLOWED_HOSTS = ['.127.0.0.1','.localhost', '127.0.0.1','https://elikilms.up.railway.app/','elicode-021410ce9c03.herokuapp.com','www.kirateq.co.ke','kirateq.co.ke']
 
 
 # Application definition
