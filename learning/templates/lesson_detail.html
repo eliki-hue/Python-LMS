@@ -2,434 +2,327 @@
 
 {% block content %}
 <head>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-okaidia.min.css" rel="stylesheet" />
-    
-    <!-- Line Numbers Plugin (Optional) -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/line-numbers/prism-line-numbers.min.css" rel="stylesheet" />
-    
-    
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-okaidia.min.css" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/line-numbers/prism-line-numbers.min.css" rel="stylesheet" />
 
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+    }
 
-    
-    <style>
+    .lesson-container {
+      display: flex;
+      height: calc(100vh - 136px);
+      overflow: hidden;
+    }
 
+    .side-panel {
+      width: 20%;
+      background-color: #f7f7f7;
+      padding: 20px;
+      border-right: 1px solid #ddd;
+      box-sizing: border-box;
+      overflow-y: auto;
+      font-family: 'Roboto', sans-serif;
+      font-weight: 500;
+    }
 
-        /* Ensure the body and html elements take up the full height */
-        html, body {
-            height: 100%;
-            margin: 0;
-            padding: 0;
-            overflow: hidden; /* Prevent extra scrolling */
-        }
+    .lesson-list {
+      list-style-type: none;
+      padding: 0;
+    }
 
-        /* Main container for sidebar and content */
-        .lesson-container {
-            display: flex;
-            height: calc(100vh - 136px); /* Subtract navbar (56px) + progress container (80px) */
-            overflow: hidden; /* Prevent extra scrolling in the container */
-            
-        }
+    .lesson-list li {
+      margin-bottom: 10px;
+    }
 
-        /* Sidebar styles */
-        .side-panel {
-            width: 20%;
-            background-color: #f7f7f7;
-            padding: 20px;
-            border-right: 1px solid #ddd;
-            box-sizing: border-box;
-            overflow-y: auto; /* Sidebar scrolls independently */
-            margin-bottom:20px;
+    .lesson-list li.active a {
+      font-weight: bold;
+      color: #f76b1c;
+    }
 
-            font-family: 'Roboto', 'Arial', 'Helvetica', sans-serif;
-            font-weight: 500; /* You can adjust the weight (400 is normal, 600 is bold) */
-        }
+    .lesson-list a {
+      font-size: 1.3rem;
+      line-height: 1.7rem;
+      font-weight: 500;
+      color: #333;
+      text-decoration: none;
+      display: block;
+      border-radius: 5px;
+      transition: background-color 0.2s ease;
+    }
 
-        /* Lesson content styles */
-       
+    .lesson-list a:hover {
+      text-decoration: underline;
+      color: #f76b1c;
+      background-color: #f1f1f1;
+    }
 
-        .lesson-list {
-            list-style-type: none;
-            padding: 0;
-        }
+    .lesson-content {
+      width: 60%;
+      padding: 20px;
+      box-sizing: border-box;
+      overflow-y: auto;
+      font-family: 'Open Sans', sans-serif;
+      font-size: 16px;
+      line-height: 1.6;
+      color: #333;
+    }
 
-        .lesson-list li {
-            margin-bottom: 10px;
-        }
+    .lesson-item.locked {
+      color: gray;
+      pointer-events: none;
+      text-decoration: none;
+      cursor: not-allowed;
+    }
 
-        .lesson-list li.active a {
-            font-weight: bold;
-            color: #f76b1c;
-        }
+    .progress-container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+      padding: 10px;
+      background-color: #f7f7f7;
+      border-radius: 5px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      height: 80px;
+    }
 
-        .lesson-list a {
-            {% comment %} font-family: 'Inter', sans-serif; {% endcomment %}
-            font-size: 1.3rem;
-    line-height: 1.7rem;
-    font-weight: 500;
-    color: #333; /* Adjust color if needed */
-    text-decoration: none;
-    {% comment %} padding: 5px 10px; {% endcomment %}
-    display: block;
-    border-radius: 5px;
-    transition: background-color 0.2s ease;
-        }
+    .progress-circle {
+      width: 60px;
+      height: 60px;
+      background: conic-gradient(#4caf50 {{ progress_percentage }}%, #ddd {{ progress_percentage }}%);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: bold;
+      color: #333;
+    }
 
-        .lesson-list a:hover {
-            text-decoration: underline;
-            color: #f76b1c;
-            background-color: #f1f1f1; /* Light hover effect */
+    .progress-text {
+      margin-left: 20px;
+      font-size: 16px;
+      font-weight: bold;
+    }
 
-        }
+    .navigation-buttons {
+      margin-top: 20px;
+      display: flex;
+      justify-content: space-between;
+    }
 
-        .content-body {
-            margin-top: 20px;
-            line-height: 1.6;
-    
-            margin-right:100px;
-          
-            
-        }
-        /* Styling for the lesson-content div */
-        .lesson-content {
-            width: 80%;
-            padding: 20px;
-            box-sizing: border-box;
-            overflow-y: auto; /* Content scrolls independently */
-            margin-bottom:20px;
-            margin-right:50px;
-            margin-left:100px;
-            font-family: 'Open Sans', 'Roboto', Arial, sans-serif;
-            font-size: 16px; /* Base font size for easy reading */
-            line-height: 1.6; /* Good line spacing */
-            color: #333; /* Dark gray text for better contrast */
-        }
+    .navigation-buttons button {
+      padding: 10px 20px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
 
-  
-  /* Headers inside lesson-content */
-  .lesson-content h1, .lesson-content h2, .lesson-content h3, .lesson-content h4 {
-    font-family: 'Roboto', 'Arial', sans-serif;
-    color: #222; /* Slightly darker for headers */
-    margin-bottom: 15px;
-  }
-  
-  /* Code blocks with a monospace font inside lesson-content */
-  .lesson-content pre, .lesson-content code {
-    font-family: 'Source Code Pro', 'Courier New', monospace;
-    font-size: 18px; /* Slightly smaller for code */
-    background-color: #f4f4f4; /* Light background for code blocks */
-    padding: 10px;
-    border-radius: 5px;
-    color: #333;
-    line-height: 1.8;
-  }
-  
-  /* Links inside lesson-content */
-  .lesson-content a {
-    font-family: 'Open Sans', 'Roboto', Arial, sans-serif;
-    text-decoration: none;
-    color:white;
-  }
-  
-  .lesson-content a:hover {
-    text-decoration: underline;
-    
-  }
-  
-  /* Button style inside lesson-content */
-  .lesson-content button {
-    font-family: 'Roboto', 'Arial', sans-serif;
-    font-size: 16px;
-    padding: 10px 20px;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-  }
-  
-  .lesson-content button:hover {
-    background-color: #0056b3; /* Darker shade for hover effect */
-  }
-  
-  .lesson-item.locked {
-    color: gray;
-    pointer-events: none;
-    text-decoration: none;
-    cursor: not-allowed;
-}
+    .navigation-buttons button:hover {
+      background-color: #0056b3;
+    }
 
-        /* Progress bar container */
-        .progress-container {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 10px;
-            padding: 10px;
-            background-color: #f7f7f7;
-            border-radius: 5px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            height: 80px; /* Fixed height for progress bar */
-        }
+    .done-button {
+      margin-top: 20px;
+      padding: 10px 20px;
+      background-color: #4caf50;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
 
-        .progress-circle {
-            width: 60px;
-            height: 60px;
-            background: conic-gradient(#4caf50 {{ progress_percentage }}%, #ddd {{ progress_percentage }}%);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 14px;
-            font-weight: bold;
-            color: #333;
-        }
+    .done-button:hover {
+      background-color: #388e3c;
+    }
 
-        .progress-text {
-            margin-left: 20px;
-            font-size: 16px;
-            font-weight: bold;
-        }
+    .right-panel {
+      width: 35%;
+      padding: 20px;
+      box-sizing: border-box;
+      background-color: #fdfdfd;
+      border-left: 1px solid #ddd;
+      overflow-y: auto;
+      height: calc(100vh - 136px);
+      font-family: 'Open Sans', sans-serif;
+    }
 
-        /* Navigation buttons styles */
-        .navigation-buttons {
-            margin-top: 20px;
-            display: flex;
-            justify-content: space-between;
-        }
+    .chat-title {
+      margin-bottom: 15px;
+      color: #333;
+      font-size: 1.2rem;
+      font-weight: 600;
+      text-align: center;
+    }
 
-        .navigation-buttons button {
-            padding: 10px 20px;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
+    .chat-box {
+      height: 300px;
+      overflow-y: auto;
+      background-color: #fff;
+      border: 1px solid #ccc;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 15px;
+      font-size: 15px;
+      line-height: 1.6;
+      color: #222;
+    }
 
-        .navigation-buttons button:hover {
-            background-color: #0056b3;
-        }
+    .chat-box p {
+      margin: 0 0 10px;
+    }
 
-        .done-button {
-            margin-top: 20px;
-            padding: 10px 20px;
-            background-color: #4caf50;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
+    .chat-box strong {
+      color: #007bff;
+    }
 
-        .done-button:hover {
-            background-color: #388e3c;
-        }
+    .chat-input-container {
+      display: flex;
+      gap: 10px;
+      flex-direction: column;
+    }
 
+    #user-input {
+      padding: 10px;
+      font-size: 15px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      width: 100%;
+    }
 
-          /* Responsive Design for Smaller Screens */
-          @media (max-width: 768px) {
-            .lesson-container {
-                flex-direction: column; /* Stack the sidebar and content on small screens */
-            }
+    .chat-input-container button {
+      padding: 10px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-weight: 500;
+      cursor: pointer;
+    }
 
-            .side-panel {
-                width: 100%; /* Full width on small screens */
-                height: auto; /* Let it adjust based on content height */
-                border-right: none; /* Remove right border */
-                margin-bottom: 20px; /* Add space below the sidebar */
-            }
+    .chat-input-container button:hover {
+      background-color: #0056b3;
+    }
 
-            .lesson-content {
-                width: 100%; /* Full width on small screens */
-            }
-
-            /* Make sure the progress bar is responsive */
-            .progress-container {
-                width: 100%;
-            }
-            .lesson-item.locked {
-                color: gray;
-                pointer-events: none;
-                text-decoration: none;
-                cursor: not-allowed;
-            }
-        }
-
-
-/* Syntax highlighting colors for different languages */
-.lesson-content .language-python {
-    color: #dcdcdc;
-  }
-  
-  .lesson-content .language-python .keyword {
-    color: #569cd6; /* Python keywords */
-  }
-  
-  .lesson-content .language-python .string {
-    color: #d69d85; /* Python strings */
-  }
-  
-  .lesson-content .language-markup {
-    color: #dcdcdc;
-  }
-  
-  .lesson-content .language-markup .tag {
-    color: #569cd6; /* HTML tags */
-  }
-  
-  .lesson-content .language-markup .attr-name {
-    color: #9cdcfe; /* HTML attribute names */
-  }
-  
-  .lesson-content .language-javascript {
-    color: #dcdcdc;
-  }
-  
-  .lesson-content .language-javascript .keyword {
-    color: #c586c0; /* JavaScript keywords */
-  }
-  
-  .lesson-content .language-javascript .string {
-    color: #d69d85; /* JavaScript strings */
-  }
-  
-  /* Copy button style */
-  .lesson-content .copy-btn {
-    font-family: 'Roboto', Arial, sans-serif;
-    font-size: 14px;
-    padding: 8px 16px;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    margin-top: 10px;
-  }
-  
-  .lesson-content .copy-btn:hover {
-    background-color: #0056b3;
-  }
-
-  /* Ensure punctuation in HTML is visible */
-.token.punctuation {
-    color: #ffcc00; /* Bright yellow for visibility */
-  }
-  
-  /* Style for HTML tags */
-  .token.tag {
-    color: #66d9ef; /* Bright cyan for visibility */
-  }
-  
-  /* Style for HTML attributes */
-  .token.attr-name {
-    color: #a6e22e; /* Bright green for visibility */
-  }
-  
-  /* Style for attribute values */
-  .token.attr-value {
-    color: #e6db74; /* Light yellow */
-  }
-  
-  /* Style for HTML comments */
-  .token.comment {
-    color: #75715e; /* Dim gray for comments */
-  }
-    /* Custom TypeScript Styling */
-    .language-c .token.keyword {
-        color: #c586c0; /* Purple for Arduino/C keywords */
+    @media (max-width: 768px) {
+      .lesson-container {
+        flex-direction: column;
       }
-  
-      .language-c .token.function {
-        color: #9cdcfe; /* Cyan for Arduino functions */
+
+      .side-panel,
+      .lesson-content,
+      .right-panel {
+        width: 100%;
+        height: auto;
       }
-  
-      .language-c .token.comment {
-        color: #6a9955; /* Green for comments */
+
+      .right-panel {
+        border-left: none;
       }
-  
-      .language-typescript .token.keyword {
-        color: #569cd6; /* Blue for TypeScript keywords */
-      }
-  
-      .language-typescript .token.function {
-        color: #dcdcaa; /* Yellow for TypeScript functions */
-      }
-  
-      .language-typescript .token.string {
-        color: #d69d85; /* Brown for strings */
-      }
-    </style>
+    }
+  </style>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" rel="stylesheet" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
 </head>
 
-<!-- Progress bar at the top -->
 <div class="progress-container">
-    <div class="progress-circle">
-        {{ progress_percentage |floatformat:2}}%
-    </div>
-    <div class="progress-text">
-        Lessons completed: {{ completed_count }}/{{ lessons.count }}
-    </div>
+  <div class="progress-circle">
+    {{ progress_percentage|floatformat:2 }}%
+  </div>
+  <div class="progress-text">
+    Lessons completed: {{ completed_count }}/{{ lessons.count }}
+  </div>
 </div>
 
-<!-- Main lesson container -->
 <div class="lesson-container">
-    <!-- Sidebar -->
-    <div class="side-panel">
-        <h3>Lessons in {{ course.title }}</h3>
-        <ul class="lesson-list">
-            {% for lesson_item in lessons %}
-            {% if lesson_item.is_locked %}
-                <!-- Locked Lesson -->
-                <li class="lesson-item locked">
-                    <span>{{ lesson_item.title }}</span>
-                </li>
-            {% else %}
-                <!-- Active Lesson -->
-                <li class="lesson-item">
-                    <a href="{% url 'lesson_detail' course_id=course.id lesson_id=lesson_item.id %}">
-                        {{ lesson_item.title }}
-                    </a>
-                </li>
-            {% endif %}
-        {% endfor %}
-</ul>
+  <div class="side-panel">
+    <h3>Lessons in {{ course.title }}</h3>
+    <ul class="lesson-list">
+      {% for lesson_item in lessons %}
+        {% if lesson_item.is_locked %}
+          <li class="lesson-item locked">
+            <span>{{ lesson_item.title }}</span>
+          </li>
+        {% else %}
+          <li class="lesson-item">
+            <a href="{% url 'lesson_detail' course_id=course.id lesson_id=lesson_item.id %}">{{ lesson_item.title }}</a>
+          </li>
+        {% endif %}
+      {% endfor %}
+    </ul>
+  </div>
+
+  <div class="lesson-content">
+    <h1>{{ lesson.title }}</h1>
+    <div class="content-body">{{ lesson.content|safe }}</div>
+
+    {% if is_locked %}
+      <p>This lesson is locked. Please complete the previous lesson first.</p>
+    {% else %}
+      {% if not is_completed %}
+        <form method="post">{% csrf_token %}<button class="done-button" type="submit" name="mark_done">Mark as Done</button></form>
+      {% else %}
+        <p class="badge bg-success">Lesson Completed</p>
+      {% endif %}
+    {% endif %}
+
+    <div class="navigation-buttons">
+      {% if previous_lesson %}<a href="{% url 'lesson_detail' course.id previous_lesson.id %}"><button>Previous Lesson</button></a>{% endif %}
+      {% if next_lesson %}
+        {% if next_lesson_is_locked %}<button disabled>Next Lesson</button>
+        {% else %}<a href="{% url 'lesson_detail' course_id=course.id lesson_id=next_lesson.id %}"><button>Next Lesson</button></a>{% endif %}
+      {% endif %}
     </div>
+  </div>
 
-    <!-- Lesson content -->
-    <div class="lesson-content">
-        <h1>{{ lesson.title }}</h1>
-        <div class="content-body">
-            {{ lesson.content|safe }}
-        </div>
-
-       <!-- Mark as Done Button (only if the lesson is not completed) -->
-       {% if is_locked %}
-       <p>This lesson is locked. Please complete the previous lesson first.</p>
-   {% else %}
-       {% if not is_completed %}
-           <form method="post">
-               {% csrf_token %}
-               <button class="btn btn-success" type="submit" name="mark_done">Mark as Done</button>
-           </form>
-       {% else %}
-           <p class="badge bg-success">Lesson Completed</p>
-       {% endif %}
-   {% endif %}
-
-        <!-- Navigation buttons -->
-        <div class="navigation-buttons">
-            {% if previous_lesson %}
-                <a href="{% url 'lesson_detail' course.id previous_lesson.id %}">
-                    <button>Previous Lesson</button>
-                </a>
-            {% endif %}
-            {% if next_lesson %}
-                {% if next_lesson_is_locked %}
-                    <button class="btn btn-primary" style="pointer-events: none;" disabled>Next Lesson</button>
-                {% else %}
-                    <a href="{% url 'lesson_detail' course_id=course.id lesson_id=next_lesson.id %}" class="btn btn-primary">Next Lesson</a>
-                {% endif %}
-            {% endif %}
-        </div>
+  <div class="right-panel">
+    <h3 class="chat-title">Ask the AI Tutor</h3>
+    <div id="chat-box" class="chat-box"></div>
+    <div class="chat-input-container">
+      <input type="text" id="user-input" placeholder="Type your question..." />
+      <button onclick="sendMessage()">Send</button>
     </div>
+  </div>
 </div>
+
+<script>
+function sendMessage() {
+  let inputField = document.getElementById("user-input");
+  let input = inputField.value.trim();
+  let chatBox = document.getElementById("chat-box");
+  if (!input) return;
+
+  chatBox.innerHTML += `<p><strong>You:</strong> ${input}</p>`;
+
+  fetch("{% url 'ai_chat' %}", {
+    method: "POST",
+    headers: {
+      "X-CSRFToken": "{{ csrf_token }}",
+      "Content-Type": "application/x-www-form-urlencoded"
+    },
+    body: `message=${encodeURIComponent(input)}&lesson_title={{ lesson.title }}`
+  })
+  .then(res => res.json())
+  .then(data => {
+    chatBox.innerHTML += `<p><strong>AI:</strong> ${data.response}</p>`;
+    chatBox.scrollTop = chatBox.scrollHeight;
+    inputField.value = "";
+  });
+}
+
+document.getElementById("user-input").addEventListener("keydown", function(e) {
+  if (e.key === "Enter") {
+    e.preventDefault();
+    sendMessage();
+  }
+});
+</script>
 {% endblock %}

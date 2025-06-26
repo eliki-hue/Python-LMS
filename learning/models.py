@@ -17,8 +17,14 @@ class Course(models.Model):
     title = models.CharField(max_length=200)
     description = models.TextField()
     content = models.TextField()
+    slug = models.SlugField(unique=True, blank=True)
     level = models.CharField(max_length=20, choices=LEVEL_CHOICES)
     created_at = models.DateTimeField(auto_now_add=True)
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.title)
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return self.title
@@ -82,3 +88,15 @@ class Profile(models.Model):
 
     def __str__(self):
         return self.user.username
+
+
+class ChatLog(models.Model):
+    student = models.ForeignKey(User, on_delete=models.CASCADE)
+    lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE)
+    user_message = models.TextField()
+    ai_response = models.TextField()
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.student.username} - {self.lesson.title}"
+

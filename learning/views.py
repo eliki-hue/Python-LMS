@@ -20,10 +20,21 @@ from django.http import JsonResponse
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 from django.core.cache import cache
+from markdown import markdown
+import requests
+# import openai
+import os
+import httpx
+# from openai import OpenAI
+from django.views.decorators.http import require_POST
+GROQ_API_KEY = settings.GROQ_API_KEY
+GROQ_API_URL = settings.GROQ_API_URL
+GROQ_MODEL = settings.GROQ_API_URL  # Use any preferred model from Groq list
 
-
+# openai.api_key = settings.OPENAI_API_KEY
+# client = OpenAI()
 from .forms import SignUpForm
-from .models import Course, Lesson, Progress, Profile
+from .models import Course, Lesson, Progress, Profile, ChatLog
 
 def home(request):
     return render(request, "home_page.html" )
@@ -153,7 +164,8 @@ def course_detail(request, course_id):
 @login_required
 def course_lessons(request, course_title):
     # Get the course by title
-    course = get_object_or_404(Course, title__iexact=course_title)
+    # course = get_object_or_404(Course, title__iexact=course_title)
+    course = get_object_or_404(Course, slug=course_title)
     # Fetch all lessons for the course
     lessons = course.lessons.all()  # Related name "lessons" is used here
     context = {
@@ -165,8 +177,58 @@ def course_lessons(request, course_title):
 
 
 
+# @csrf_exempt
+# def ai_chat_view(request):
+#     if request.method == "POST":
+#         message = request.POST.get("message")
+#         lesson_title = request.POST.get("lesson_title")
 
+#         try:
+#             response = client.chat.completions.create(
+#                 model="gpt-3.5-turbo",
+#                 messages=[
+#                     {"role": "system", "content": f"You are a helpful AI tutor helping a student learn: {lesson_title}."},
+#                     {"role": "user", "content": message}
+#                 ]
+#             )
+#             return JsonResponse({"response": response.choices[0].message.content})
+#         except Exception as e:
+#             return JsonResponse({"response": f"An error occurred: {str(e)}"})
+# @csrf_exempt
+# @require_POST
+# def ai_chat_view(request):
+#     if request.method == "POST":
+#         message = request.POST.get("message")
+#         lesson_title = request.POST.get("lesson_title", "")
+#         lesson_content = Lesson.objects.get(title=lesson_title).content
+#         prompt = f"You are an AI programming tutor for kids aged 10 to 17. Explain clearly and use appropriate examples depending on the lesson when needed.\n Teachers lesson content for current lesson \nLesson: {lesson_title} is:{lesson_content}\n\nStudent question: {message}"
+#         # prompt = f"You are an AI programming tutor for kids aged 10 to 17. Explain clearly and use Python examples when needed.\nLesson: {lesson_title}\nQuestion: {message}"
 
+#         try:
+#             response = requests.post(
+#                 "https://api.groq.com/openai/v1/chat/completions",
+#                 headers={
+#                     "Authorization": f"Bearer {GROQ_API_KEY}",
+#                     "Content-Type": "application/json"
+#                 },
+#                 json={
+#                     "model": "llama3-8b-8192",
+#                     "messages": [{"role": "user", "content": prompt}],
+#                     "temperature": 0.6
+#                 }
+#             )
+
+#             response_data = response.json()
+
+#             ai_markdown = response_data['choices'][0]['message']['content']
+#             ai_html = markdown(ai_markdown)  # ← Convert Markdown to HTML
+#             ai_html = markdown(ai_markdown, extensions=['fenced_code'])
+#             return JsonResponse({"response": ai_html})
+
+#         except Exception as e:
+#             return JsonResponse({"response": f"An error occurred: {str(e)}"})
+
+#     return JsonResponse({"error": "Invalid request"}, status=400)
 
 @login_required
 # @cache_page(60)  # Cache for 1 minute

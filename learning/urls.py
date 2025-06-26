@@ -23,11 +23,13 @@ urlpatterns = [
     path('courses', views.course_list, name='course_list'),
     path('dashboard/', views.admin_dashboard, name='admin_dashboard'),
     path('course/<int:course_id>/', views.course_detail, name='course_detail'),
-    path('course/<str:course_title>/', views.course_lessons, name='course_lessons'),
+    # path('course/<str:course_title>/', views.course_lessons, name='course_lessons'),
+    path('course/<slug:course_title>/', views.course_lessons, name='course_lessons'),
     path('course/<int:course_id>/lesson/<int:lesson_id>/', views.lesson_detail, name='lesson_detail'),
     # path('ckeditor/', include('ckeditor_uploader.urls')),
     path('upload_image/', upload_image, name='upload_image'),
     path('ckeditor5/', include('django_ckeditor_5.urls')),
+    path('ai-chat/', views.ai_chat_view, name='ai_chat'),
 
 ]
 

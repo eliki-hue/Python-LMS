@@ -31,7 +31,8 @@ RUN python manage.py collectstatic --noinput
 EXPOSE 8000
 
 # 10. Run gunicorn as the default entrypoint
-CMD ["gunicorn", "Python-LMS.wsgi:application", "--bind", "0.0.0.0:8000"]
+# CMD ["sh", "-c", "python manage.py migrate && python3 manage.py runserver "]
+CMD ["sh", "-c", "python manage.py migrate && gunicorn python_lms.wsgi:application --bind 0.0.0.0:8000"]
 
 
 

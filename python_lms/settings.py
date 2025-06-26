@@ -16,6 +16,11 @@ import os
 import dj_database_url
 
 
+# OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+GROQ_API_KEY = config("GROQ_API_KEY")
+GROQ_MODEL = config("GROQ_MODEL")
+GROQ_API_URL = config("GROQ_API_URL")
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
@@ -29,8 +34,8 @@ SECRET_KEY = 'django-insecure-9od=10bdau&+gx5n4khdggg310w_5k^^=1v*2je0pytyd0v2+j
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['.127.0.0.1','.localhost', '127.0.0.1','https://elikilms.up.railway.app/','elicode-021410ce9c03.herokuapp.com','www.kirateq.co.ke','kirateq.co.ke']
-
+# ALLOWED_HOSTS = ['.127.0.0.1','.localhost', '*','https://elikilms.up.railway.app/','elicode-021410ce9c03.herokuapp.com','www.kirateq.co.ke','kirateq.co.ke', '0.0.0.0', "https://90a1-102-0-21-4.ngrok-free.app"]
+ALLOWED_HOSTS = ["*"]
 
 # Application definition
 
@@ -169,21 +174,21 @@ if config('MODE')=='dev':
      DATABASES = {
     
 
-           'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / 'db.sqlite3',  # This stores the SQLite3 database in the project root
-    }
-        # 'default': {
-        #     'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        #     'NAME': config('DB_NAME'),
-        #     'USER':config('DB_USER'),
-        #     'PASSWORD':config("DB_PASSWORD"),
-        #     'HOST':config('DB_HOST'),
-        #     'PORT':config('DB_PORT')
+        #    'default': {
+        #     'ENGINE': 'django.db.backends.sqlite3',
+        #     'NAME': BASE_DIR / 'db.sqlite3',  # This stores the SQLite3 database in the project root
+    # }
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql_psycopg2',
+            'NAME': config('DB_NAME'),
+            'USER':config('DB_USER'),
+            'PASSWORD':config("DB_PASSWORD"),
+            'HOST':config('DB_HOST'),
+            'PORT':config('DB_PORT')
             
-        # }
+        }
     
-    }
+     }
 else:
     DATABASES = {
         'default': dj_database_url.config(
@@ -193,6 +198,18 @@ else:
 
     
     }
+
+
+    # DATABASES = {
+    
+
+    #        'default': {
+    #         'ENGINE': 'django.db.backends.sqlite3',
+    #         'NAME': BASE_DIR / 'db.sqlite3',  # This stores the SQLite3 database in the project root
+    # }
+    
+
+
 db_from_env = dj_database_url.config(conn_max_age=500)
 DATABASES['default'].update(db_from_env)
 
