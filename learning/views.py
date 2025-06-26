@@ -177,23 +177,62 @@ def course_lessons(request, course_title):
 
 
 
-# @csrf_exempt
-# def ai_chat_view(request):
-#     if request.method == "POST":
-#         message = request.POST.get("message")
-#         lesson_title = request.POST.get("lesson_title")
+conversation_memory = {}  # For dev only. Replace with DB in production.
 
-#         try:
-#             response = client.chat.completions.create(
-#                 model="gpt-3.5-turbo",
-#                 messages=[
-#                     {"role": "system", "content": f"You are a helpful AI tutor helping a student learn: {lesson_title}."},
-#                     {"role": "user", "content": message}
-#                 ]
-#             )
-#             return JsonResponse({"response": response.choices[0].message.content})
-#         except Exception as e:
-#             return JsonResponse({"response": f"An error occurred: {str(e)}"})
+@require_POST
+@csrf_exempt
+def ai_chat_view(request):
+    from django.utils.datastructures import MultiValueDictKeyError
+
+    try:
+        message = request.POST['message']
+        lesson_title = request.POST.get('lesson_title', '')
+        lesson_content = request.POST.get('lesson_content', '')
+
+        # Get or initialize chat history from session
+        chat_history = request.session.get('chat_history', [])
+
+        # Add user message to chat history
+        chat_history.append({
+            "role": "user",
+            "content": f"You are an AI programming tutor for kids aged 10 to 17. Be friendly and explain clearly.\nLesson: {lesson_title} - {lesson_content}\n\nStudent: {message}"
+        })
+
+        # Prepare API request
+        headers = {
+            "Authorization": f"Bearer {os.getenv('GROQ_API_KEY')}",
+            "Content-Type": "application/json"
+        }
+
+        body = {
+            "model": "llama3-8b-8192",
+            "messages": chat_history,
+            "temperature": 0.7
+        }
+
+        res = requests.post("https://api.groq.com/openai/v1/chat/completions", headers=headers, json=body)
+        res.raise_for_status()
+        response_data = res.json()
+
+        # Get AI message and add to history
+        ai_markdown = response_data['choices'][0]['message']['content']
+        chat_history.append({
+            "role": "assistant",
+            "content": ai_markdown
+        })
+
+        # Save back to session
+        request.session['chat_history'] = chat_history
+
+        # Convert Markdown to HTML
+        ai_html = markdown(ai_markdown, extensions=['fenced_code'])
+
+        return JsonResponse({"response": ai_html})
+
+    except MultiValueDictKeyError as e:
+        return JsonResponse({"error": f"Missing parameter: {str(e)}"}, status=400)
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=500)
 # @csrf_exempt
 # @require_POST
 # def ai_chat_view(request):
