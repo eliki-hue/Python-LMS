@@ -54,4 +54,34 @@
             {% endfor %}
         </tbody>
     </table>
+
+    <h2>AI Assessments</h2>
+<table>
+    <thead>
+        <tr>
+            <th>Student</th>
+            <th>Lesson</th>
+            <th>Student Question</th>
+            <th>AI Response</th>
+            <th>Score</th>
+            <th>Feedback</th>
+            <th>Date</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for student, lessons in assessment_data.items %}
+            {% for lesson, data in lessons.items %}
+                <tr>
+                    <td>{{ student.username }}</td>
+                    <td>{{ lesson.title }}</td>
+                    <td>{{ data.question }}</td>
+                    <td>{{ data.response|linebreaksbr }}</td>
+                    <td>{{ data.score }}</td>
+                    <td>{{ data.feedback }}</td>
+                    <td>{{ data.timestamp }}</td>
+                </tr>
+            {% endfor %}
+        {% endfor %}
+    </tbody>
+</table>
 {% endblock %}

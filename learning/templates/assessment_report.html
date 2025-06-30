@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="mb-4">Your AI Assessment Report</h2>
+    {% if assessments %}
+        <table class="table table-bordered table-hover">
+            <thead class="thead-light">
+                <tr>
+                    <th>Lesson</th>
+                    <th>Student Question</th>
+                    <th>AI Response</th>
+                    <th>Assessment Summary</th>
+                    <th>Score</th>
+                    <th>Time</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for a in assessments %}
+                    <tr>
+                        <td>{{ a.lesson.title if a.lesson else "N/A" }}</td>
+                        <td>{{ a.student_question|truncatewords:20 }}</td>
+                        <td>{{ a.ai_response|linebreaks }}</td>
+                        <td><strong>{{ a.feedback }}</strong></td>
+                        <td>{{ a.ai_score|default:"-" }}</td>
+                        <td>{{ a.timestamp|date:"M d, Y H:i" }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>No assessments found.</p>
+    {% endif %}
+</div>
+{% endblock %}

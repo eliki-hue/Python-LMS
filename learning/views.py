@@ -7,7 +7,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
-from .models import Course, Progress, StudentLevelAccess
+from .models import Course, Progress, StudentLevelAccess, Assessment
 from django.contrib import messages
 from django.utils import timezone
 from django.core.mail import send_mail
@@ -20,21 +20,32 @@ from django.http import JsonResponse
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 from django.core.cache import cache
+from django.utils.datastructures import MultiValueDictKeyError
+from decouple import config
 from markdown import markdown
-import requests
-# import openai
+import requests, json
+import openai
 import os
 import httpx
-# from openai import OpenAI
+from openai import OpenAI, OpenAIError
 from django.views.decorators.http import require_POST
+from .forms import SignUpForm
+from .models import Course, Lesson, Progress, Profile, ChatLog
+
+
+############################################################################################
+
 GROQ_API_KEY = settings.GROQ_API_KEY
 GROQ_API_URL = settings.GROQ_API_URL
 GROQ_MODEL = settings.GROQ_API_URL  # Use any preferred model from Groq list
-
+ai_url = settings.OPENAI_URL # this is for easier switching btw models url
 # openai.api_key = settings.OPENAI_API_KEY
-# client = OpenAI()
-from .forms import SignUpForm
-from .models import Course, Lesson, Progress, Profile, ChatLog
+
+
+
+
+# #####################################################################################
+
 
 def home(request):
     return render(request, "home_page.html" )
@@ -176,63 +187,176 @@ def course_lessons(request, course_title):
     return render(request, 'lesson_detail.html', context)
 
 
+def parse_ai_output(response_text):
+    """Extracts assessment summary from AI response."""
+    assessment = ""
+    lines = response_text.split("\n")
+    for line in lines:
+        if line.strip().lower().startswith("assessment:"):
+            assessment = line.strip()
+            break
+    return response_text.strip(), assessment
+
 
 conversation_memory = {}  # For dev only. Replace with DB in production.
+
+
+
+
+
 
 @require_POST
 @csrf_exempt
 def ai_chat_view(request):
-    from django.utils.datastructures import MultiValueDictKeyError
-
+    print("POST Data:", request.POST)
+    client = OpenAI(api_key=settings.OPENAI_API_KEY)
     try:
         message = request.POST['message']
+        lesson_id = request.POST.get('lesson_id')
         lesson_title = request.POST.get('lesson_title', '')
         lesson_content = request.POST.get('lesson_content', '')
 
-        # Get or initialize chat history from session
-        chat_history = request.session.get('chat_history', [])
+        if not lesson_id:
+            return JsonResponse({"error": "Missing lesson_id"}, status=400)
 
-        # Add user message to chat history
-        chat_history.append({
-            "role": "user",
-            "content": f"You are an AI programming tutor for kids aged 10 to 17. Be friendly and explain clearly.\nLesson: {lesson_title} - {lesson_content}\n\nStudent: {message}"
-        })
+        lesson = Lesson.objects.get(id=lesson_id)
 
-        # Prepare API request
-        headers = {
-            "Authorization": f"Bearer {os.getenv('GROQ_API_KEY')}",
-            "Content-Type": "application/json"
-        }
+        session_key = f"chat_history_lesson_{lesson_id}"
+        chat_history = request.session.get(session_key, [])
 
-        body = {
-            "model": "llama3-8b-8192",
-            "messages": chat_history,
-            "temperature": 0.7
-        }
+        chat_history.append({"role": "user", "content": message})
 
-        res = requests.post("https://api.groq.com/openai/v1/chat/completions", headers=headers, json=body)
-        res.raise_for_status()
-        response_data = res.json()
+        trigger_assessment = message.strip().lower() in [
+            "i understand", "i'm ready", "i'm ready for assessment", "done", "i get it", "understood"
+        ]
 
-        # Get AI message and add to history
-        ai_markdown = response_data['choices'][0]['message']['content']
-        chat_history.append({
-            "role": "assistant",
-            "content": ai_markdown
-        })
+        if trigger_assessment:
+            # Limit to last 10 messages
+            recent = chat_history[-2:]
 
-        # Save back to session
-        request.session['chat_history'] = chat_history
+            summary = "\n".join([f"{m['role']}: {m['content']}" for m in recent if m['role'] in ["user", "assistant"]])
 
-        # Convert Markdown to HTML
-        ai_html = markdown(ai_markdown, extensions=['fenced_code'])
+           
 
-        return JsonResponse({"response": ai_html})
+            # Fall back to Groq's LLaMA3
+            headers = {
+                "Authorization": f"Bearer {settings.GROQ_API_KEY}",
+                "Content-Type": "application/json"
+            }
 
-    except MultiValueDictKeyError as e:
-        return JsonResponse({"error": f"Missing parameter: {str(e)}"}, status=400)
+            body = {
+                "model": "llama3-8b-8192",
+                "messages": [
+                    {
+                        "role": "system",
+                        "content": (
+                            f"You're an AI programming tutor assessing a student's understanding of '{lesson_title}'. "
+                            "Assess based on:\n"
+                            "1. What is a microcontroller\n"
+                            "2. What is Arduino\n"
+                            "3. Two use cases\n"
+                            "Return JSON like: {\"score\": 85, \"assessment\": \"...\", \"feedback\": \"...\"}"
+                        )
+                    },
+                    {"role": "user", "content": f"Lesson content: {lesson_content}\nConversation:\n{summary}"}
+                ]
+            }
+
+            groq_response = requests.post(
+                "https://api.groq.com/openai/v1/chat/completions",
+                headers=headers,
+                json=body
+            )
+            groq_response.raise_for_status()
+            content = groq_response.json()["choices"][0]["message"]["content"]
+            model_used = "groq-llama3"
+
+            # Parse JSON
+            result_data = json.loads(content)
+
+            # Save to DB
+            Assessment.objects.create(
+                student=request.user,
+                lesson=lesson,
+                ai_score=result_data.get('score'),
+                feedback=result_data.get('feedback'),
+            )
+
+            del request.session[session_key]
+
+            return JsonResponse({
+                "response": markdown(result_data.get("assessment", "")),
+                "score": result_data.get("score"),
+                "feedback": result_data.get("feedback"),
+                "model_used": model_used,
+            })
+
+        else:
+            # Chat mode (teaching phase)
+            system_msg = {
+                "role": "system",
+                "content": (
+                    f"You are an AI programming tutor for kids aged 10–17.\n"
+                    f"Lesson: '{lesson_title}'\n"
+                    f"Content: {lesson_content}\n"
+                    f"Be friendly, interactive, and guide students step-by-step."
+                )
+            }
+
+            try:
+                # GPT-4o first
+                openai_response = client.chat.completions.create(
+                    model="gpt-4o",
+                    messages=[system_msg] + chat_history
+                )
+                reply = openai_response.choices[0].message.content
+                model_used = "openai-gpt-4o"
+
+            except OpenAIError as e:
+                print("OpenAI failed:", str(e))
+
+                # Fallback to Groq
+                headers = {
+                    "Authorization": f"Bearer {settings.GROQ_API_KEY}",
+                    "Content-Type": "application/json"
+                }
+
+                body = {
+                    "model": "llama3-8b-8192",
+                    "messages": [system_msg] + chat_history
+                }
+
+                groq_response = requests.post(
+                    "https://api.groq.com/openai/v1/chat/completions",
+                    headers=headers,
+                    json=body
+                )
+                groq_response.raise_for_status()
+                reply = groq_response.json()["choices"][0]["message"]["content"]
+                model_used = "groq-llama3"
+
+            chat_history.append({"role": "assistant", "content": reply})
+            request.session[session_key] = chat_history
+
+            return JsonResponse({
+                "response": markdown(reply),
+                "model_used": model_used,
+            })
+
     except Exception as e:
+        print("AI Chat Error:", str(e))
         return JsonResponse({"error": str(e)}, status=500)
+
+
+@login_required
+def assessment_report_view(request):
+    # Show only the current user's assessments (students or teacher's class can be extended)
+    assessments = Assessment.objects.filter(student=request.user).order_by('-timestamp')
+
+    return render(request, 'assessment_report.html', {
+        'assessments': assessments
+    })
+
 # @csrf_exempt
 # @require_POST
 # def ai_chat_view(request):
@@ -378,11 +502,29 @@ def admin_dashboard(request):
             }
         progress_data[student] = student_progress
 
+
+        assessment_data = {}
+        assessments = Assessment.objects.select_related('student', 'lesson')
+        for assessment in assessments:
+            student = assessment.student
+            lesson = assessment.lesson
+            if student not in assessment_data:
+                assessment_data[student] = {}
+                assessment_data[student][lesson] = {
+                'score': assessment.ai_score,
+                'feedback': assessment.feedback,
+                'question': assessment.student_question,
+                'response': assessment.ai_response,
+                'timestamp': assessment.timestamp,
+            }
     context = {
         'students': students,
         'level_choices': level_choices,
         'progress_data': progress_data,
         'access_levels': access_levels,
+        'assessment_data': assessment_data,
     }
+    
+    
 
     return render(request, 'admin_dashboard.html', context)

@@ -100,3 +100,14 @@ class ChatLog(models.Model):
     def __str__(self):
         return f"{self.student.username} - {self.lesson.title}"
 
+class Assessment(models.Model):
+    student = models.ForeignKey(User, on_delete=models.CASCADE)
+    lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE)
+    student_question = models.TextField()
+    ai_response = models.TextField()
+    ai_score = models.IntegerField(null=True, blank=True)  # e.g., out of 100
+    feedback = models.TextField(blank=True)
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.student.username} - {self.lesson.title} ({self.timestamp})"

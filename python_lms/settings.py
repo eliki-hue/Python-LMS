@@ -16,7 +16,8 @@ import os
 import dj_database_url
 
 
-# OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+OPENAI_API_KEY = config("OPENAI_API_KEY")
+OPENAI_URL = config("OPENAI_URL")
 GROQ_API_KEY = config("GROQ_API_KEY")
 GROQ_MODEL = config("GROQ_MODEL")
 GROQ_API_URL = config("GROQ_API_URL")

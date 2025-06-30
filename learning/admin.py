@@ -3,11 +3,11 @@ from .models import Course, Lesson, Progress
 
 from django import forms
 from django.contrib import admin
-from .models import Lesson
+from .models import Lesson, Assessment
 from django_ckeditor_5.widgets import CKEditor5Widget
 
 admin.site.register(Course)
-# admin.site.register(Progress)
+admin.site.register(Assessment)
 
 @admin.register(Lesson)
 class LessonAdmin(admin.ModelAdmin):
@@ -25,3 +25,7 @@ class LessonAdminForm(forms.ModelForm):
 class LessonAdmin(admin.ModelAdmin):
     form = LessonAdminForm
 
+class Assessment(admin.ModelAdmin):
+    class Meta:
+        model = Assessment
+        fields = '__all__'

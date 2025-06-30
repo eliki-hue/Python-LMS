@@ -30,6 +30,7 @@ urlpatterns = [
     path('upload_image/', upload_image, name='upload_image'),
     path('ckeditor5/', include('django_ckeditor_5.urls')),
     path('ai-chat/', views.ai_chat_view, name='ai_chat'),
+    path('assessment-report/', views.assessment_report_view, name='assessment_report'),
 
 ]
 

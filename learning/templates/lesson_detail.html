@@ -308,7 +308,7 @@ function sendMessage() {
       "X-CSRFToken": "{{ csrf_token }}",
       "Content-Type": "application/x-www-form-urlencoded"
     },
-    body: `message=${encodeURIComponent(input)}&lesson_title={{ lesson.title }}`
+    body: `message=${encodeURIComponent(input)}&lesson_title={{ lesson.title }}&lesson_id={{lesson.id }}`
   })
   .then(res => res.json())
   .then(data => {
